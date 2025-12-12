@@ -1,0 +1,13 @@
+﻿using EntityLayer.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataAccessLayer.Abstract
+{
+    public interface IContactDal :IRepository<Contact> //generic yapı IRepository den Contact türünde miras alıyor
+    {
+    }
+}

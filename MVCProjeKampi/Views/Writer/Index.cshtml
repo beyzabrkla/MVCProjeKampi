@@ -1,0 +1,70 @@
+﻿@using EntityLayer.Concrete
+@model List<Writer>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<body class="hold-transition sidebar-mini">
+    <!-- /.navbar -->
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h1 class="mb-0">Yazarlar Sayfası</h1>
+                    <a href="/Writer/AddWriter" class="btn btn-success">Yazar Ekle</a>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card card-solid">
+            <div class="card-body pb-0">
+                <div class="row d-flex align-items-stretch">
+                    @foreach (var x in Model)
+                    {
+                        <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex">
+                            <div class="card bg-light w-100">
+                                <div class="card-header text-muted border-bottom-0">
+                                    @x.WriterTitle
+                                </div>
+                                <div class="card-body pt-0">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-7">
+                                            <h2 class="lead"><b>@x.WriterName @x.WriterSurname</b></h2>
+                                            <p class="text-muted text-sm"><b>Hakkında: </b>@x.WriterAbout</p>
+                                            <ul class="ml-4 mb-0 fa-ul text-muted">
+                                                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Mail: @x.WriterMail</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-5 text-center">
+                                            <img src="~/AdminLTE-3.0.4/dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="text-right">
+                                        <a href="#" class="btn btn-sm bg-teal">
+                                            <i class="fas fa-comments"></i> Başlıklar
+                                        </a>
+                                        <a href="/Writer/EditWriter/@x.WriterId" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-user"></i> Profili Düzenle
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     }
+                </div>
+            </div>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</body>
+</html>

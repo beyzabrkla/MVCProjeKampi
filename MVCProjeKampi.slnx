@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BusinessLayer/BusinessLayer.csproj" Id="d3105aaa-9f7c-4b64-b84d-7946635126ae" />
+  <Project Path="DataAccessLayer/DataAccessLayer.csproj" Id="484f22f0-2a8e-4ace-8978-4bed50a6a029" />
+  <Project Path="EntityLayer/EntityLayer.csproj" Id="d85b1442-eb51-4df7-b83f-5152fbf0c5d6" />
+  <Project Path="MVCProjeKampi/MVCProjeKampi.csproj" Id="159c1571-ed1b-4092-bd57-5a2f53bee161" />
+</Solution>
