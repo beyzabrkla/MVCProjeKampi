@@ -32,6 +32,16 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="/Message/Inbox?status=unread" class="nav-link">
+                        <i class="far fa-envelope-open"></i> Okunmamış Mesajlar
+                        @if (ViewBag.InboxUnreadCount > 0)
+                        {
+                            <span class="badge bg-danger float-right">@ViewBag.InboxUnreadCount</span>
+                        }
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="/Message/Drafts" class="nav-link">
                         <i class="far fa-file-alt"></i> Taslaklar
                     </a>

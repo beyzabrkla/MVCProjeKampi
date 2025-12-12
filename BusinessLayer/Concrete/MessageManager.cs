@@ -29,14 +29,25 @@ namespace BusinessLayer.Concrete
             return _uow.Messages.List(x => x.IsDraft == true);
         }
 
-        public List<Message> GetListInbox()
+        public List<Message> GetListInbox(string receiverMail)
         {
-            return _uow.Messages.List(x => x.ReceiverMail == "admin@gmail.com");
+            return _uow.Messages.List(x => x.ReceiverMail == receiverMail);
         }
 
-        public List<Message> GetListSendbox()
+        public List<Message> GetListSendbox(string senderMail)
         {
-            return _uow.Messages.List(x => x.SenderMail == "admin@gmail.com");
+            return _uow.Messages.List(x => x.SenderMail == senderMail);
+        }
+
+        public List<Message> GetListUnreadInbox(string receiverMail)
+        {
+            return _uow.Messages.List(x => x.ReceiverMail == receiverMail && x.IsRead == false);
+        }
+
+        //gelen kutusundaki okunmaamış mesajları sayan metot
+        public int GetUnreadMessageCountByReceiver(string receiverMail)
+        {
+            return _uow.Messages.List(x => x.ReceiverMail == receiverMail && x.IsRead == false).Count;
         }
 
         public void MessageAdd(Message message)
@@ -56,5 +67,6 @@ namespace BusinessLayer.Concrete
             _uow.Messages.Update(message);
             _uow.Commit();
         }
+
     }
 }

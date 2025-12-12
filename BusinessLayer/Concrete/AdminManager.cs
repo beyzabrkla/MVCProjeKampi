@@ -83,5 +83,12 @@ namespace BusinessLayer.Concrete
         {
             return _uow.Admins.List();
         }
+
+        // Bu metot daha önce sizde yoktu, eğer kullanılıyorsa eklenmeli.
+        public Admin TGetByUserName(string username)
+        {
+            // HATA DÜZELTME: _adminDal yerine _uow.Admins kullanılıyor
+            return _uow.Admins.Get(x => x.AdminUserName == username);
+        }
     }
 }

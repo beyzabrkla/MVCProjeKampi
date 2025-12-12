@@ -131,6 +131,10 @@
     <Compile Include="Migrations\202512101603269_add-admin.Designer.cs">
       <DependentUpon>202512101603269_add-admin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512121346590_MessageIsRead.cs" />
+    <Compile Include="Migrations\202512121346590_MessageIsRead.Designer.cs">
+      <DependentUpon>202512121346590_MessageIsRead.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -186,6 +190,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512101603269_add-admin.resx">
       <DependentUpon>202512101603269_add-admin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512121346590_MessageIsRead.resx">
+      <DependentUpon>202512121346590_MessageIsRead.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

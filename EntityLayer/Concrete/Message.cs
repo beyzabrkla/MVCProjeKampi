@@ -29,5 +29,7 @@ namespace EntityLayer.Concrete
 
         public bool IsDraft { get; set; }
 
+        public bool IsRead { get; set; }
+
     }
 }

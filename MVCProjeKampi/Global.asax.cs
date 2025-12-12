@@ -30,6 +30,8 @@ namespace MVCProjeKampi
             // Autofac Entegrasyonu Başlar
             var builder = new ContainerBuilder();
 
+            builder.RegisterType<BusinessLayer.ValidationRules.WriterValidator>().InstancePerRequest();
+
             // Controller'ları kaydedin
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
 

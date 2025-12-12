@@ -39,12 +39,24 @@ namespace MVCProjeKampi.Controllers
 
         public PartialViewResult ContactPartial()
         {
-            // Contact sayısı
+            string userMail = (string)Session["AdminMail"];
+
+            // İletişim Sayısı her zaman gösterilir.
             ViewBag.ContactCount = _contactService.GetList().Count;
 
-            // Message sayıları
-            ViewBag.InboxCount = _messageService.GetListInbox().Count; 
-            ViewBag.SendBoxCount = _messageService.GetListSendbox().Count; 
+            // Oturum yoksa, mesaj sayaçları 0 olmalıdır.
+            if (string.IsNullOrEmpty(userMail))
+            {
+                ViewBag.InboxCount = 0;
+                ViewBag.SendBoxCount = 0;
+                ViewBag.UnreadCount = 0;
+                return PartialView();
+            }
+
+            // Mesaj sayaçları oturumdaki kullanıcıya göre filtrele
+            ViewBag.InboxCount = _messageService.GetListInbox(userMail).Count;
+            ViewBag.SendBoxCount = _messageService.GetListSendbox(userMail).Count;
+            ViewBag.UnreadCount = _messageService.GetUnreadMessageCountByReceiver(userMail);
 
             return PartialView();
         }

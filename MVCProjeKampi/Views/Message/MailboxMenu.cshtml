@@ -1,0 +1,10 @@
+﻿<li class="nav-item">
+    <a href="/Message/Inbox" class="nav-link">
+        <i class="far fa-envelope"></i> Okunmamış Mesajlar
+        @if (ViewBag.InboxUnreadCount > 0)
+        {
+            <span class="badge badge-warning float-right">@ViewBag.InboxUnreadCount</span>
+        }
+    </a>
+</li>
+
