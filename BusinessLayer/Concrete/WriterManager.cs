@@ -33,6 +33,8 @@ namespace BusinessLayer.Concrete
 
         public void WriterDelete(Writer writer)
         {
+            // Yazarın durumunu pasif/silinmiş olarak işaretle (Soft Delete)
+            writer.WriterStatus = false;
             _uow.Writers.Delete(writer);
             _uow.Commit(); // UOW üzerinden kaydedilir
         }

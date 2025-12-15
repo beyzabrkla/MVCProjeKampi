@@ -82,5 +82,28 @@ namespace MVCProjeKampi.Controllers
             }
             return View();
         }
+
+        [HttpGet]
+        public ActionResult DeleteWriter(int id)
+        {
+            // Writer'ı ID ile Business katmanından çekiyoruz.
+            var writerValue = _writerService.GetById(id);
+
+            if (writerValue != null)
+            {
+                // Yazarı silme (durumunu pasifize etme) metodunu çağırıyoruz.
+                // Eğer Manager'da sadece ID ile çalışan metot varsa, onu çağırın:
+                // _writerService.WriterSetStatusToFalse(id); 
+
+                // Eğer Manager'da entity ile çalışan metot varsa, onu çağırın:
+                _writerService.WriterDelete(writerValue);
+
+                // İşlem tamamlandıktan sonra kullanıcıyı yazar listesine yönlendiriyoruz.
+                return RedirectToAction("Index");
+            }
+
+            // Yazar bulunamazsa yine listeye dön.
+            return RedirectToAction("Index");
+        }
     }
 }

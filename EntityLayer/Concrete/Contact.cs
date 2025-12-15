@@ -24,5 +24,8 @@ namespace EntityLayer.Concrete
         public string Message { get; set; }
 
         public DateTime ContactDate { get; set; }
+
+        public bool IsTrash { get; set; } // İletişim mesajı çöp kutusunda mı?
+        public DateTime? TrashDate { get; set; }
     }
 }

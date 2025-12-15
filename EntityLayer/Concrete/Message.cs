@@ -30,6 +30,8 @@ namespace EntityLayer.Concrete
         public bool IsDraft { get; set; }
 
         public bool IsRead { get; set; }
+        public bool IsTrash { get; set; } // Mesaj çöp kutusunda mı?
+        public DateTime? TrashDate { get; set; }
 
     }
 }

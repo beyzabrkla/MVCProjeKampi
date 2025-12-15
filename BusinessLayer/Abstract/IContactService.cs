@@ -10,5 +10,8 @@ namespace BusinessLayer.Abstract
         Contact GetById(int id);
         void ContactDelete(Contact contact);
         void ContactUpdate(Contact contact);
+        void ContactMoveToTrash(int id);
+        void ContactRestore(int id);
+        int GetContactCountNonTrash();                                                                                                                                                                          
     }
 }

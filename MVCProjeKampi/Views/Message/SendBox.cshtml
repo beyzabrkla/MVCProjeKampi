@@ -49,24 +49,41 @@
                                         <tr>
                                             <td>
                                                 <div class="icheck-primary">
-                                                    <input type="checkbox" value="" id="check1">
-                                                    <label for="check1"></label>
+                                                    <input type="checkbox" value="" id="check@(x.MessageId)">
+                                                    <label for="check@(x.MessageId)"></label>
                                                 </div>
                                             </td>
-                                            <td class="mailbox-star"><a href="/Message/GetSendBoxdMessageDetails/@x.MessageId"><i class="fas fa-star text-warning"></i></a></td>
-                                            <td class="mailbox-name"><a href="/Message/GetSendBoxMessageDetails/@x.MessageId">@x.ReceiverMail</a></td>
-                                            <td class="mailbox-subject">
-                                                <b>@x.Subject</b> - @( !string.IsNullOrEmpty(x.MessageContent) && x.MessageContent.Length > 30 ? x.MessageContent.Substring(0, 30) + "..." : x.MessageContent ?? "" )
+
+                                            <td class="mailbox-star">
+                                                <i class="fas fa-star text-muted"></i>
                                             </td>
+
+                                            <td class="mailbox-name">
+                                                <a href="/Message/GetSendBoxMessageDetails/@x.MessageId">@x.ReceiverMail</a>
+                                            </td>
+
+                                            <td class="mailbox-subject">
+                                                <b>@x.Subject</b> - @( !string.IsNullOrEmpty(x.MessageContent) && x.MessageContent.Length > 50 ? x.MessageContent.Substring(0, 50) + "..." : x.MessageContent ?? "" )
+                                            </td>
+
                                             <td class="mailbox-attachment"></td>
-                                            <td class="mailbox-date"> @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))</td>
+
+                                            <td class="mailbox-date">
+                                                @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))
+                                            </td>
+
+                                            <td>
+                                                <a href="/Message/MessageMoveToTrash/@x.MessageId" class="btn btn-default btn-sm"
+                                                   title="Çöp Kutusuna Taşı"
+                                                   onclick="return confirm('Bu mesajı çöp kutusuna taşımak istediğinizden emin misiniz?')">
+                                                    <i class="far fa-trash-alt"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
-                            <!-- /.table -->
                         </div>
-                        <!-- /.mail-box-messages -->
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer p-0">

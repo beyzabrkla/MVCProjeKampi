@@ -27,21 +27,33 @@
                         <!-- /.card-header -->
                         @using (Html.BeginForm("NewMessage", "Message", FormMethod.Post))
                         {
+                            @* KRİTİK EKLENTİ: Taslak düzenlenirken ID'yi taşır *@
+                            @Html.HiddenFor(x => x.MessageId)
+
                             <div class="card-body">
                                 <div class="form-group">
                                     @Html.Label("Alıcı Adı")
                                     @Html.TextBoxFor(x => x.ReceiverMail, new { @class = "form-control" })
                                     @Html.ValidationMessageFor(x => x.ReceiverMail, "", new { @class = "text-danger" })
-                                 </div>
-                                 <div class="form-group">
+                                </div>
+                                <div class="form-group">
                                     @Html.Label("Konu")
                                     @Html.TextBoxFor(x => x.Subject, new { @class = "form-control" })
                                     @Html.ValidationMessageFor(x => x.Subject, "", new { @class = "text-danger" })
-                                  </div>
-                                 <div class="form-group">
-                                     @Html.Label("Mesajınız")
-                                     <textarea id="compose-textarea" name="MessageContent" class="form-control" style="height:300px"></textarea>
-                                 </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Mesajınız")
+
+                                    @* KRİTİK DÜZELTME: Veri bağlama için TextAreaFor kullanıldı *@
+                                    @Html.TextAreaFor(x => x.MessageContent, new
+                                    {
+                                        @id = "compose-textarea", // JavaScript editörünüzün ID'si
+                                        @class = "form-control",
+                                        @style = "height:300px"
+                                    })
+
+                                    @* @Html.TextAreaFor kullandığımız için name="MessageContent" yazmaya gerek yoktur. *@
+                                </div>
                                 <div class="form-group">
                                     <div class="btn btn-default btn-file">
                                         <i class="fas fa-paperclip"></i> Dosya Ekle
@@ -60,10 +72,11 @@
                                         <i class="far fa-envelope"></i> Gönder
                                     </button>
                                 </div>
-                                <button type="reset" class="btn btn-default"><i class="fas fa-times"></i> İptal Et</button>
+                                <a href="/Contact/Index" class="btn btn-default" title="İptal Et ve İletişim Listesine Dön">
+                                    <i class="fas fa-times"></i> İptal Et
+                                </a>
                             </div>
                         }
-
                         <!-- /.card-footer -->
                     </div>
                     <!-- /.card -->

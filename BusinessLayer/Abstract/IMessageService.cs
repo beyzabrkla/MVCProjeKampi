@@ -9,6 +9,7 @@ namespace BusinessLayer.Abstract
 {
     public interface IMessageService
     {
+        List<Message> GetList();
         List<Message> GetListInbox(string receiverMail);
         List<Message> GetListSendbox(string senderMail);
         void MessageAdd(Message message);   
@@ -16,7 +17,12 @@ namespace BusinessLayer.Abstract
         void MessageDelete(Message message);
         void MessageUpdate(Message message);
         List<Message> GetDraftMessages();
+        List<Message> GetDraftMessagesBySender(string senderMail);
         List<Message> GetListUnreadInbox(string receiverMail);
         int GetUnreadMessageCountByReceiver(string receiverMail);
+        void MessageMoveToTrash(int id);
+        void MessageRestore(int id);
+        int GetTrashMessageCountByMail(string userMail);
+        int GetDraftMessageCountBySender(string userMail);
     }
 }

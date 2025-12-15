@@ -38,7 +38,7 @@ namespace MVCProjeKampi.Controllers
             if (string.IsNullOrEmpty(userMail))
             {
                 // Eğer mail adresi çekilemezse, boş bir liste döndür veya yetki hatası ver.
-                return RedirectToAction("Login", "Admin"); // Örn: Giriş sayfasına yönlendir
+                return RedirectToAction("Index", "Login"); // Örn: Giriş sayfasına yönlendir
             }
 
             //status değişkeni metodun parametresi olarak tanımlandı.
@@ -99,7 +99,18 @@ namespace MVCProjeKampi.Controllers
         [HttpPost]
         public ActionResult NewMessage(Message p, string action)
         {
-            p.SenderMail = "admin@gmail.com";
+            // Session'dan oturum açan kullanıcının mail adresini çekin
+            string userMail = (string)Session["AdminMail"];
+
+            // KRİTİK KONTROL: Mail adresi boşsa veya NULL ise, kullanıcıyı Login'e yönlendir.
+            if (string.IsNullOrEmpty(userMail))
+            {
+                // Kullanıcıyı Login sayfasına yönlendirerek tekrar oturum açmasını sağlayın
+                return RedirectToAction("Index", "Login");
+                // Veya mesajı kaydetme (db ye NULL geçmesini engellemek için)
+            }
+
+            p.SenderMail = userMail;
             p.MessageDate = DateTime.Now;
             var sanitizer = new HtmlSanitizer(); //mesaj içeriğindeki zararlı yazılımlar için 
             p.MessageContent = sanitizer.Sanitize(p.MessageContent);
@@ -112,7 +123,19 @@ namespace MVCProjeKampi.Controllers
                 if (results.IsValid)
                 {
                     p.IsDraft = false;
-                    _messageservice.MessageAdd(p);
+                    // Yeni gönderilen mesajın başlangıçta okunmamış (IsRead=false) olması gerekir.
+                    p.IsRead = false;
+                    if (p.MessageId > 0)
+                    {
+                        // Mevcut taslağı güncelle
+                        _messageservice.MessageUpdate(p);
+                    }
+                    else
+                    {
+                        // Yeni mesajı ekle
+                        _messageservice.MessageAdd(p);
+                    }
+
                     return RedirectToAction("SendBox");
                 }
                 else
@@ -126,16 +149,34 @@ namespace MVCProjeKampi.Controllers
             }
             else if (action == "save")
             {
+                // TASLAK İŞLEMİ
                 p.IsDraft = true;
-                _messageservice.MessageAdd(p);
-                return RedirectToAction("Drafts");
+                p.IsRead = true; // Taslaklar genelde okundu sayılır.
+                if (p.MessageId > 0)
+                {
+                    // Mevcut taslağı güncelle
+                    _messageservice.MessageUpdate(p);
+                }
+                else
+                {
+                    // Yeni taslağı ekle
+                    _messageservice.MessageAdd(p);
+                }
             }
-            return View(p);
+            return RedirectToAction("Drafts");
         }
 
         public ActionResult Drafts()
         {
-            var draftMessages = _messageservice.GetDraftMessages();
+            string userMail = (string)Session["AdminMail"];
+            if (string.IsNullOrEmpty(userMail))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            // Yalnızca giriş yapan kullanıcının taslaklarını getir
+            var draftMessages = _messageservice.GetDraftMessagesBySender(userMail);
+
             return View(draftMessages);
         }
 
@@ -143,9 +184,6 @@ namespace MVCProjeKampi.Controllers
         public ActionResult MailboxMenu()
         {
             string userMail = (string)Session["AdminMail"];
-
-            // 1. İletişim Sayısı (Kullanıcıdan bağımsızdır, her zaman gösterilir)
-            ViewBag.ContactCount = _contactService.GetList().Count;
 
             if (string.IsNullOrEmpty(userMail))
             {
@@ -162,6 +200,72 @@ namespace MVCProjeKampi.Controllers
             ViewBag.InboxUnreadCount = _messageservice.GetUnreadMessageCountByReceiver(userMail);
 
             return PartialView();
+        }
+
+        public ActionResult TrashBox()
+        {
+            string userMail = (string)Session["AdminMail"];
+
+            // Oturum yoksa, login sayfasına yönlendir
+            if (string.IsNullOrEmpty(userMail))
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            // 1. SİLİNMİŞ CONTACT (İletişim Formu) MESAJLARI
+            // Tüm Contact mesajlarından sadece IsTrash=true olanları getir.
+            var contactTrash = _contactService.GetList()
+                                              .Where(x => x.IsTrash == true)
+                                              .ToList();
+
+            // 2. SİLİNMİŞ MESSAGE (Kullanıcı Mesajları)
+            // Business Layer'da MessageService içine bu methodlar eklenmelidir:
+
+            // MesajController'da GetListInbox/GetListSendbox'ı filtreleyen bir method yoksa, 
+            // buradaki filtreleme mantığını kullanmalısınız:
+
+            var messageTrash = _messageservice.GetList()
+                                              .Where(x => x.IsTrash == true &&
+                                                         (x.SenderMail == userMail || x.ReceiverMail == userMail))
+                                              .ToList();
+
+            // İki farklı model türünü tek View'a göndermek için ViewBag veya ViewModel kullanacağız.
+            ViewBag.ContactTrash = contactTrash;
+
+            // Ana Model olarak silinmiş Message listesini gönderelim.
+            return View(messageTrash);
+        }
+
+        public ActionResult MessageMoveToTrash(int id)
+        {
+            // Business Layer'da MessageMoveToTrash methodunuzun olduğunu varsayıyoruz.
+            _messageservice.MessageMoveToTrash(id);
+
+            // Yönlendirme: Aynı Controller'daki TrashBox'a git
+            return RedirectToAction("TrashBox");
+        }
+
+        public ActionResult MessageRestore(int id)
+        {
+            _messageservice.MessageRestore(id);
+            return RedirectToAction("TrashBox");
+        }
+
+        public ActionResult MessageHardDelete(int id)
+        {
+            // Öncelikle mesajı ID ile Business katmanından çekiyoruz.
+            var messageValue = _messageservice.GetById(id);
+
+            if (messageValue != null)
+            {
+                // Mesajı silme metodunu çağırıyoruz.
+                _messageservice.MessageDelete(messageValue);
+
+                // Silme işleminden sonra kullanıcıyı tekrar çöp kutusuna yönlendiriyoruz.
+                return RedirectToAction("TrashBox");
+            }
+            // Mesaj bulunamazsa hata sayfasına veya ana sayfaya yönlendirilebilir.
+            return RedirectToAction("TrashBox");
         }
     }
 }

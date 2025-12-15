@@ -42,23 +42,27 @@ namespace MVCProjeKampi.Controllers
 
             var admin = _adminService.AdminLogin(p.AdminUserName, p.AdminPassword);
 
-            if (admin == null)
+            if (admin != null)
             {
-                ViewBag.ErrorMessage = "Kullanıcı adı veya şifre hatalı.";
-                return View();
+                FormsAuthentication.SetAuthCookie(admin.AdminUserName, false);
+
+                Session["AdminUserName"] = admin.AdminUserName;
+
+                // KRİTİK EKLENTİ: SenderMail'in NULL geçmesini engeller
+                Session["AdminMail"] = admin.AdminUserName; // <-- ARTIK DOĞRU MAİL ADRESİNİ ÇEKECEK
+                return RedirectToAction("Index", "AdminCategory");
             }
 
-            FormsAuthentication.SetAuthCookie(admin.AdminUserName, false);
-            Session["AdminUserName"] = admin.AdminUserName;
-            return RedirectToAction("Index", "AdminCategory");
+            ViewBag.ErrorMessage = "Kullanıcı adı veya şifre hatalı.";
+            return View();
         }
 
         // Oturumu kapatma metodu
         public ActionResult LogOut()
         {
             FormsAuthentication.SignOut(); // Forms Authentication oturumunu sonlandırır
-            // Session.Abandon(); // Session kullanılıyorsa Session'ı da sonlandırır.
-            return RedirectToAction("Index");
+            Session.Abandon(); // Session kullanılıyorsa Session'ı da sonlandırır.
+            return RedirectToAction("Index", "Login");
         }
     }
 }

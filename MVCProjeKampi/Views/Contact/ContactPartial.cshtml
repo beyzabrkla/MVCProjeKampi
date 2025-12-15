@@ -15,13 +15,19 @@
                 <li class="nav-item active">
                     <a href="/Contact/Index" class="nav-link">
                         <i class="fas fa-mail-bulk"></i> İletişim
-                        <span class="badge bg-primary float-right">@ViewBag.ContactCount</span>
+                        @if (ViewBag.ContactCount > 0)
+                        {
+                            <span class="badge badge-primary float-right">@ViewBag.ContactCount</span>
+                        }
                     </a>
                 </li>
                 <li class="nav-item active">
                     <a href="/Message/Inbox" class="nav-link">
                         <i class="fas fa-inbox"></i> Gelen Mesajlar
-                        <span class="badge bg-primary float-right">@ViewBag.InboxCount</span>
+                        @if (ViewBag.InboxCount > 0)
+                        {
+                            <span class="badge badge-primary float-right">@ViewBag.InboxCount</span>
+                        }
                     </a>
                 </li>
                 <li class="nav-item">
@@ -34,9 +40,9 @@
                 <li class="nav-item">
                     <a href="/Message/Inbox?status=unread" class="nav-link">
                         <i class="far fa-envelope-open"></i> Okunmamış Mesajlar
-                        @if (ViewBag.InboxUnreadCount > 0)
+                        @if (ViewBag.UnreadCount != null && ViewBag.UnreadCount > 0)
                         {
-                            <span class="badge bg-danger float-right">@ViewBag.InboxUnreadCount</span>
+                            <span class="badge bg-danger float-right">@ViewBag.UnreadCount</span>
                         }
                     </a>
                 </li>
@@ -44,11 +50,19 @@
                 <li class="nav-item">
                     <a href="/Message/Drafts" class="nav-link">
                         <i class="far fa-file-alt"></i> Taslaklar
+                        @if (ViewBag.DraftCount > 0)
+                        {
+                            <span class="badge badge-warning float-right">@ViewBag.DraftCount</span>
+                        }
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="/Message/TrashBox" class="nav-link">
                         <i class="far fa-trash-alt"></i> Çöp Kutusu
+                        @if (ViewBag.TrashCount > 0)
+                        {
+                            <span class="badge badge-danger float-right">@ViewBag.TrashCount</span>
+                        }
                     </a>
                 </li>
             </ul>

@@ -135,6 +135,18 @@
     <Compile Include="Migrations\202512121346590_MessageIsRead.Designer.cs">
       <DependentUpon>202512121346590_MessageIsRead.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512151209281_update-message2.cs" />
+    <Compile Include="Migrations\202512151209281_update-message2.Designer.cs">
+      <DependentUpon>202512151209281_update-message2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512151212003_update-contact2.cs" />
+    <Compile Include="Migrations\202512151212003_update-contact2.Designer.cs">
+      <DependentUpon>202512151212003_update-contact2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512151417412_AddIsTrashToContactAndMessage.cs" />
+    <Compile Include="Migrations\202512151417412_AddIsTrashToContactAndMessage.Designer.cs">
+      <DependentUpon>202512151417412_AddIsTrashToContactAndMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -194,6 +206,19 @@
     <EmbeddedResource Include="Migrations\202512121346590_MessageIsRead.resx">
       <DependentUpon>202512121346590_MessageIsRead.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512151209281_update-message2.resx">
+      <DependentUpon>202512151209281_update-message2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512151212003_update-contact2.resx">
+      <DependentUpon>202512151212003_update-contact2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512151417412_AddIsTrashToContactAndMessage.resx">
+      <DependentUpon>202512151417412_AddIsTrashToContactAndMessage.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\202512151416213_message\" />
+    <Folder Include="Migrations\202512151416486_contact\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

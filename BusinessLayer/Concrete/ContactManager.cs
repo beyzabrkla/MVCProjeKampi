@@ -30,6 +30,28 @@ namespace BusinessLayer.Concrete
             _uow.Commit(); //Kaydetme sorumluluğu UOW'da
         }
 
+        public void ContactMoveToTrash(int id)
+        {
+            var contact = _uow.Contacts.Get(x => x.ContactId == id);
+            if (contact != null)
+            {
+                contact.IsTrash = true;
+                _uow.Contacts.Update(contact);
+                _uow.Commit();
+            }
+        }
+
+        public void ContactRestore(int id)
+        {
+            var contact = _uow.Contacts.Get(x => x.ContactId == id);
+            if (contact != null)
+            {
+                contact.IsTrash = false; // IsTrash'i false yaparak geri yüklüyoruz.
+                _uow.Contacts.Update(contact);
+                _uow.Commit();
+            }
+        }
+
         public void ContactUpdate(Contact contact)
         {
             _uow.Contacts.Update(contact);
@@ -43,7 +65,12 @@ namespace BusinessLayer.Concrete
 
         public List<Contact> GetList()
         {
-            return _uow.Contacts.List();
+            return _uow.Contacts.List(x=>x.IsTrash==false);
+        }
+
+        public int GetContactCountNonTrash()
+        {
+            return _uow.Contacts.List(x => x.IsTrash == false).Count;
         }
     }
 }
