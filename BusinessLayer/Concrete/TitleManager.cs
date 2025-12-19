@@ -28,6 +28,11 @@ namespace BusinessLayer.Concrete
             return _uow.Titles.List();
         }
 
+        public List<Title> GetListByWriter(int id)
+        {
+            return _uow.Titles.List(x => x.WriterId == id, x => x.Writer);
+        }
+
         public void TitleAdd(Title title)
         {
             _uow.Titles.Insert(title);
@@ -36,7 +41,8 @@ namespace BusinessLayer.Concrete
 
         public void TitleDelete(Title title)
         {
-            _uow.Titles.Delete(title);
+            title.TitleStatus=false;
+            _uow.Titles.Update(title);
             _uow.Commit();
         }
 

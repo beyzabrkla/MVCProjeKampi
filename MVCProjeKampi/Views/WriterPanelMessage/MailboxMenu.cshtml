@@ -1,0 +1,12 @@
+﻿<li class="nav-item">
+    <a href="/WriterPanelMessage/Inbox?status=unread" class="nav-link">
+        <i class="far fa-envelope-open"></i> Okunmamış Mesajlar
+
+        @* Bu ViewBag, MessageController/MailboxMenu'den gelmeli. *@
+        @if (ViewBag.InboxUnreadCount != null && ViewBag.InboxUnreadCount > 0)
+        {
+            <span class="badge bg-danger float-right">@ViewBag.InboxUnreadCount</span>
+        }
+        @* Eğer Okunmamış Mesajlar sayacınızın adı farklı ise, buradaki adı düzeltin. *@
+    </a>
+</li>

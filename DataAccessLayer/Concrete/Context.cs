@@ -23,5 +23,7 @@ namespace DataAccessLayer.Concrete
         public DbSet<Admin>Admins{ get; set; }
         //context sınıfı sql e tablo olarak yazacak bunları 
         //Örnek: Writer sınfından Writers sayfası
+
+
     }
 }

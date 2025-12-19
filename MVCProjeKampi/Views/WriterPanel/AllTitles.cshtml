@@ -1,0 +1,184 @@
+﻿@model PagedList.IPagedList<EntityLayer.Concrete.Title>
+@using PagedList
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "AllTitles";
+    Layout = "~/Views/Shared/_WriterLayout.cshtml";
+}
+
+@{
+    string color = "";
+}
+
+<body class="hold-transition sidebar-mini">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Başlık İşlemleri</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped projects">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                #
+                            </th>
+                            <th style="width: 20%">
+                                Başlık Adı
+                            </th>
+                            <th style="width: 15%">
+                                Oluşturan Yazar
+                            </th>
+                            <th style="width: 8%" class="text-center">
+                                Kategori
+                            </th>
+                            <th style="width: 20%">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model)
+                        {
+                            if (x.Category.CategoryName == "Dizi")
+                            {
+                                color = "badge badge-success";
+                            }
+                            else if (x.Category.CategoryName == "Film")
+                            {
+                                color = "badge badge-warning";
+                            }
+                            else if (x.Category.CategoryName == "Kitap")
+                            {
+                                color = "badge badge-info";
+                            }
+                            else if (x.Category.CategoryName == "Tiyatro")
+                            {
+                                color = "badge badge-secondary";
+                            }
+                            else if (x.Category.CategoryName == "Eğitim")
+                            {
+                                color = "badge badge-danger";
+                            }
+                            else if (x.Category.CategoryName == "Sosyal Medya")
+                            {
+                                color = "badge badge-success";
+                            }
+                            else if (x.Category.CategoryName == "Spor")
+                            {
+                                color = "badge badge-info";
+                            }
+
+                            <tr>
+                                <td>
+                                    @x.TitleId
+                                </td>
+                                <td>
+                                    <a>
+                                        @x.TitleName
+                                    </a>
+                                    <br />
+                                    <small>
+                                        @(((DateTime)x.TitleDate).ToString("dd-MMM-yyyy"))
+                                    </small>
+                                </td>
+                                <td>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item">
+                                            <img alt="Avatar" class="table-avatar" src="@x.Writer.WriterImage">
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="project-state">
+                                    <span class="@color">@x.Category.CategoryName</span>
+                                </td>
+                                <td class="project-actions text-right">
+                                    <a class="btn btn-primary btn-sm" href="/Default/Titles/@x.TitleId">
+                                        <i class="fas fa-folder">
+                                        </i>
+                                        Yazılar
+                                    </a>
+                                    <a class="btn btn-info btn-sm" href="/WriterPanelContent/AddContent/@x.TitleId">
+                                        <i class="fas fa-pencil-alt">
+                                        </i>
+                                        Bu Başlığa Yaz
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </section>
+    <div class="card-footer">
+        <nav aria-label="Contacts Page Navigation">
+            <ul class="pagination justify-content-center m-0">
+
+                @{
+                    int totalPages = Model.PageCount;
+                    int currentPage = Model.PageNumber;
+                }
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("AllTitles", new { page = currentPage - 1 })" aria-label="Previous">
+                            &laquo;
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            &laquo;
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    string activeClass = (i == currentPage) ? "active" : "";
+
+                    <li class="page-item @activeClass">
+                        <a class="page-link" href="@Url.Action("AllTitles", new { page = i })">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("AllTitles", new { page = currentPage + 1 })" aria-label="Next">
+                            &raquo;
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            &raquo;
+                        </a>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    </div>
+</body>

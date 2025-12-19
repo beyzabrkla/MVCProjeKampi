@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using MVCProjeKampi.Filters;
 
 namespace MVCProjeKampi
 {
@@ -8,6 +9,7 @@ namespace MVCProjeKampi
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
-        }
+
+       }
     }
 }

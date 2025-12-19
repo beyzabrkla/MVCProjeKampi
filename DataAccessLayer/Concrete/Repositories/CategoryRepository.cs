@@ -44,14 +44,23 @@ namespace DataAccessLayer.Concrete.Repositories
             _object.Remove(p); //Kategori silmek için Remove() metodunu kullandık
         }
 
-        public List<Category> List(Expression<Func<Category, bool>> filter) //şartlı listeleme için gereken metot
+        public List<Category> List(Expression<Func<Category, bool>> filter, Expression<Func<Category, object>> include = null, string includeProperties = null) //şartlı listeleme için gereken metot
         {
-            return _object.Where(filter).ToList();
+            IQueryable<Category> query = _object.Where(filter);
+
+            if (include != null)
+            {
+                query = query.Include(include);
+            }
+
+            return query.ToList();
         }
 
-        public Category Get(Expression<Func<Category, bool>> filter)
+        public Category Get(Expression<Func<Category, bool>> filter, Expression<Func<Category, object>> include = null)
         {
-            return _object.SingleOrDefault(filter);
+            IQueryable<Category> query = _object.Where(filter);
+            if (include != null) query = query.Include(include);
+            return query.SingleOrDefault();
         }
     }
 }

@@ -1,0 +1,117 @@
+﻿@using EntityLayer.Concrete
+@model List<Message>
+@{
+    ViewBag.Title = "TrashBox";
+    Layout = "~/Views/Shared/_WriterLayout.cshtml";
+    List<Contact> contactTrashList = ViewBag.ContactTrash as List<Contact>;
+    string userMail = (string)Session["WriterMail"];
+}
+
+<body class="hold-transition sidebar-mini">
+
+    <!-- Content Wrapper. Contains page content -->
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Çöp Kutusu</h1>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <section class="content">
+        <div class="row">
+            @Html.Action("ContactPartial", "Contact")
+            <div class="col-md-9">
+                <div class="card card-primary card-outline">
+                    <div class="card-header"><h3 class="card-title">Merkezi Çöp Kutusu</h3></div>
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive mailbox-messages">
+                            <table class="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Kaynak</th>
+                                        <th>Kimden/Kime</th>
+                                        <th>Konu</th>
+                                        <th>Tarih</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @* A. SİLİNMİŞ İLETİŞİM MESAJLARI (Contact) *@
+                                    @if (contactTrashList != null)
+                                    {
+                                        foreach (var x in contactTrashList)
+                                        {
+                                            <tr class="table-danger">
+                                                <td><span class="badge badge-danger">İletişim</span></td>
+
+                                                @* Contact mesajları size (Admin/Yöneticiye) geldiği için, direkt göndereni gösteririz. *@
+                                                <td>Gönderen: @x.UserName (@x.UserMail)</td>
+
+                                                <td><a href="/Contact/GetContactDetails/@x.ContactId">@x.Subject</a></td>
+
+                                                @* ContactDate, mesajın alındığı orijinal tarihtir (silinme tarihi yerine). *@
+                                                <td>@(((DateTime)x.ContactDate).ToString("dd-MMM-yyyy"))</td>
+
+                                                <td>
+                                                    <a href="/Contact/ContactRestore/@x.ContactId" class="btn btn-warning btn-sm" onclick="return confirm('Bu mesajı Gelen Kutusu\'na geri yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i> Geri Yükle</a>
+                                                    <a href="/Contact/ContactHardDelete/@x.ContactId" class="btn btn-danger btn-sm"
+                                                       title="Kalıcı Olarak Sil"
+                                                       onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                    @* B. SİLİNMİŞ KULLANICI MESAJLARI (Message) *@
+                                    @foreach (var x in Model)
+                                    {
+                                        <tr class="table-warning">
+                                            <td><span class="badge badge-warning">Mesaj</span></td>
+
+                                            @* Kimden/Kime Mantığı: Eğer SenderMail, oturumdaki mail ise, bu bir Giden Mesajdır. Değilse, Gelen Mesajdır. *@
+                                            <td>
+                                                @if (x.SenderMail == userMail)
+                                                {
+                                                    // Mesajı SİZ gönderdiniz (Giden Kutusu'ndan silindi)
+                                                    <span>Kime: **@x.ReceiverMail**</span>
+                                                }
+                                                else
+                                                {
+                                                    // Mesaj SİZE geldi (Gelen Kutusu'ndan silindi)
+                                                    <span>Kimden: **@x.SenderMail**</span>
+                                                }
+                                            </td>
+
+                                            <td><a href="/WriterPanelMessage/GetInboxMessageDetails/@x.MessageId">@x.Subject</a></td>
+
+                                            @* MessageDate, mesajın gönderildiği orijinal tarihtir. *@
+                                            <td>@(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))</td>
+
+                                            <td>
+                                                <a href="/Message/MessageRestore/@x.MessageId" class="btn btn-warning btn-sm" onclick="return confirm('Bu mesajı Gelen Kutusu\'na geri yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i> Geri Yükle</a>
+                                                <a href="/Message/MessageHardDelete/@x.MessageId" class="btn btn-danger btn-sm"
+                                                   title="Kalıcı Olarak Sil"
+                                                   onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+

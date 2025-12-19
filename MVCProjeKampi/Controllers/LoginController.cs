@@ -19,10 +19,12 @@ namespace MVCProjeKampi.Controllers
         // DAL yerine BLL'e bağımlı oluyoruz.
         // DI (Dependency Injection) yapısını taklit ederek Manager'ı oluşturuyoruz:
         private readonly IAdminService _adminService;
+        private readonly IWriterService _writerService;
 
-        public LoginController(IAdminService adminService)
+        public LoginController(IAdminService adminService, IWriterService writerService)
         {
             _adminService = adminService;
+            _writerService = writerService;
         }
 
         [HttpGet]
@@ -63,6 +65,43 @@ namespace MVCProjeKampi.Controllers
             FormsAuthentication.SignOut(); // Forms Authentication oturumunu sonlandırır
             Session.Abandon(); // Session kullanılıyorsa Session'ı da sonlandırır.
             return RedirectToAction("Index", "Login");
+        }
+
+        [HttpGet]
+        public ActionResult WriterLogin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult WriterLogin(Writer p)
+        {
+            var writer = _writerService.WriterLogin(p.WriterMail, p.WriterPassword);
+
+            if (writer != null)
+            {
+                FormsAuthentication.SetAuthCookie(writer.WriterMail, false);
+
+                // Session'a ATAMA işlemini yapın. (Bu satır önemli!)
+                // Bu, yazarın mail adresini (string) oturumda tutar.
+                Session["WriterMail"] = writer.WriterMail;
+                Session["WriterImage"] = writer.WriterImage; // <-- Bu değer doğru URL olmalı
+                // Hata veren okuma satırını (string mail = (string)Session["WriterMail"];) KALDIRIN. 
+                // Zaten yönlendirme yapacaksınız, burada okumaya ihtiyacınız yok.
+
+                return RedirectToAction("MyContent", "WriterPanelContent");
+            }
+
+            ViewBag.ErrorMessage = "Mail Adresi veya şifre hatalı.";
+            return View();
+        }
+
+        // Oturumu kapatma metodu
+        public ActionResult WriterLogOut()
+        {
+            FormsAuthentication.SignOut(); // Forms Authentication oturumunu sonlandırır
+            Session.Abandon(); // Session kullanılıyorsa Session'ı da sonlandırır.
+            return RedirectToAction("WriterLogin", "Login");
         }
     }
 }

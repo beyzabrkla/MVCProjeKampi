@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace MVCProjeKampi.Controllers
 {
-    [Authorize(Roles ="B")]
+    [Authorize]
     public class AdminCategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

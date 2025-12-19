@@ -14,7 +14,7 @@ namespace BusinessLayer.Concrete
     {
         private readonly IUnitOfWork _uow;
 
-        public ContentManager(IUnitOfWork uow) 
+        public ContentManager(IUnitOfWork uow)
         {
             _uow = uow;
         }
@@ -44,13 +44,27 @@ namespace BusinessLayer.Concrete
 
         public List<Content> GetList()
         {
-            return _uow.Contents.List();
+            // Bütün içerikleri getirirken (filtresiz), Title VE Writer nesnelerini de yükle.
+            return _uow.Contents.List(
+                filter: null, // Filtre yok
+                includeProperties: "Title,Writer" // İki ilişkili nesneyi de yükle
+                ).OrderByDescending(x => x.ContentDate).ToList();
         }
 
         public List<Content> GetListByTitleId(int id) //idye göre verileri listeleme
         {
-            // Title'a ait Content'leri getirmek:
-            return _uow.Contents.List(x => x.TitleId == id);
+            return _uow.Contents.List(
+                filter: x => x.TitleId == id,
+                includeProperties: "Title,Writer"
+                ).OrderByDescending(x => x.ContentDate).ToList();
+        }
+
+        public List<Content> GetListByWriter(int id)
+        {
+            return _uow.Contents.List(
+                    filter: X => X.WriterId == id,
+                    includeProperties: "Title" // İlişkili Başlık (Title) verilerini yükle
+                );
         }
     }
 }

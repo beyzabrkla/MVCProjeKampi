@@ -9,12 +9,11 @@ namespace DataAccessLayer.Abstract
 {
     public interface IRepository<T> //sql den hangi veriyi gönderiyorsan o türü alıcak,  tüm tablolar için ayrı ayrı interface yazmamak için generic yapı kullandık 
     {
-        List<T> List(); //listeleme işlemi
         void Insert(T p); //ekleme işlemi
-        T Get(Expression<Func<T, bool>> filter);// id ye göre silinecek değeri getiren metot
+        T Get(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include = null);
         void Update(T p); //güncelleme işlemi
         void Delete(T p); //silme işlemi
-
-        List<T> List(Expression<Func<T,bool>>filter); //şartlı listeleme işlemi
+        List<T> List(Expression<Func<T,bool>>filter, Expression<Func<T, object>> include = null, string includeProperties = null); //şartlı listeleme işlemi
+        List<T> List();
     }
 }

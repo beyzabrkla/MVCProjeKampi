@@ -28,9 +28,16 @@ namespace DataAccessLayer.Concrete.Repositories
             deletedEntity.State = EntityState.Deleted; //silme durumunu entitystate komutuna atadık 
         }
 
-        public T Get(Expression<Func<T, bool>> filter)
+        public T Get(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include = null)
         {
-            return  _object.SingleOrDefault(filter); //filterden gelen değer döndürüldü
+            IQueryable<T> query = _object.Where(filter);
+
+            if (include != null)
+            {
+                query = query.Include(include);
+            }
+
+            return query.SingleOrDefault(); // Artık filtre ve include uygulanmış sorgudan çekiyoruz.
         }
 
         public void Insert(T p)
@@ -38,15 +45,32 @@ namespace DataAccessLayer.Concrete.Repositories
             var addEntity= _c.Entry(p);//ekleyeceğimiz değeri addEntity değişkenine atadık
             addEntity.State = EntityState.Added;//ekleme durumunu entitystate komutunun durumuna atadık
         }
-
         public List<T> List()
         {
-            return _object.ToList(); //tüm kayıtlar listelenir
+            return _object.ToList(); // tüm kayıtlar listelenir
         }
 
-        public List<T> List(Expression<Func<T, bool>> filter) //filtrelemeden gelen değere göre listeleme yapılacak
+        public List<T> List(Expression<Func<T, bool>> filter, Expression<Func<T, object>> include = null, string includeProperties = null)
         {
-            return _object.Where(filter).ToList(); 
+            // Hata veren Satır 55'ten önce, 'filter' null mı kontrol ediliyor
+            IQueryable<T> query = _object;
+
+            // YENİ KONTROL EKLE: Eğer filtre (predicate) NULL değilse Where metodu çağrılır.
+            if (filter != null)
+            {
+                query = query.Where(filter); // Eğer filter null değilse, filtreleme yapılır
+            }
+
+            // ... (includeProperties kısmı) ...
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return query.ToList();
         }
 
         public void Update(T p)
