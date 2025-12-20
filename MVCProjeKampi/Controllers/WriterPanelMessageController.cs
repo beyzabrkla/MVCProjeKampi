@@ -3,6 +3,7 @@ using BusinessLayer.ValidationRules;
 using EntityLayer.Concrete;
 using FluentValidation.Results;
 using Ganss.Xss;
+using MVCProjeKampi.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Web.Mvc;
 
 namespace MVCProjeKampi.Controllers
 {
-    [Authorize]
+    [WriterAuthorize]
     public class WriterPanelMessageController : BaseWriterPanelController
     {
         private readonly IMessageService _messageService;

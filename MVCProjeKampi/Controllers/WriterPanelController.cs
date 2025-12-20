@@ -1,31 +1,60 @@
 ﻿using BusinessLayer.Abstract;
+using BusinessLayer.ValidationRules;
 using EntityLayer.Concrete;
+using FluentValidation.Results;
+using MVCProjeKampi.Attributes;
+using PagedList;
+using PagedList.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using PagedList;
-using PagedList.Mvc;
 
 namespace MVCProjeKampi.Controllers
 {
-    [Authorize]
+    [WriterAuthorize]
     public class WriterPanelController : BaseWriterPanelController
     {
         private readonly ITitleService _titleService;
         private readonly IWriterService _writerService;
         private readonly ICategoryService _categoryService;
+        WriterValidator writerValidator = new WriterValidator();
 
-        public WriterPanelController(ITitleService titleService, ICategoryService categoryService, IWriterService writerService)
+
+        public WriterPanelController(ITitleService titleService, ICategoryService categoryService, IWriterService writerService, WriterValidator writerValidator)
         {
             _titleService = titleService;
             _categoryService = categoryService;
             _writerService = writerService;
+            this.writerValidator = writerValidator;
         }
 
+        [HttpGet]
         public ActionResult WriterProfile()
+        {       
+            string mail = (string)Session["WriterMail"];
+            int writerId = _writerService.GetWriterIdByMail(mail);
+            var writervalue = _writerService.GetById(writerId);
+            return View(writervalue);
+        }
+
+        [HttpPost]
+        public ActionResult WriterProfile(Writer p)
         {
+            ValidationResult results = writerValidator.Validate(p);
+            if (results.IsValid)
+            {
+                _writerService.WriterUpdate(p);
+                return RedirectToAction("AllTitles","WriterPanel");
+            }
+            else
+            {
+                foreach (var x in results.Errors)
+                {
+                    ModelState.AddModelError(x.PropertyName, x.ErrorMessage);
+                }
+            }
             return View();
         }
 
@@ -63,7 +92,7 @@ namespace MVCProjeKampi.Controllers
         [HttpPost]
         public ActionResult NewTitle(Title p)
         {
-            p.TitleDate = DateTime.Today; // Veya DateTime.Now;
+            p.TitleDate = DateTime.Now;
             p.WriterId = 4;
             p.TitleStatus = true;
             _titleService.TitleAdd(p);
@@ -76,11 +105,30 @@ namespace MVCProjeKampi.Controllers
             List<SelectListItem> valueCategory = (from x in _categoryService.GetList()
                                                   select new SelectListItem
                                                   {
-                                                      Text = x.CategoryName,   // Kullanıcıya gözükecek değer (DisplayMember)
-                                                      Value = x.CategoryId.ToString() // Arkada tutulacak değer (ValueMember)
+                                                      Text = x.CategoryName,
+                                                      Value = x.CategoryId.ToString()
                                                   }).ToList();
             ViewBag.vlc = valueCategory;
+
+            List<SelectListItem> statusValues = new List<SelectListItem>()
+        {
+            new SelectListItem { Text = "Aktif", Value = "True" },
+            new SelectListItem { Text = "Pasif", Value = "False" }
+        };
+
             var TitleValue = _titleService.GetById(id);
+
+            if (TitleValue.TitleStatus == true)
+            {
+                statusValues.Where(x => x.Value == "True").First().Selected = true;
+            }
+            else 
+            {
+                statusValues.Where(x => x.Value == "False").First().Selected = true;
+            }
+
+            ViewBag.vls = statusValues;
+
             return View(TitleValue);
         }
 

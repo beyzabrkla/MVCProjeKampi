@@ -42,6 +42,9 @@
                             <th style="width: 15%">
                                 Oluşturan Yazar
                             </th>
+                            <th style="width: 10%" class="text-center">
+                                Durum
+                            </th>
                             <th style="width: 8%" class="text-center">
                                 Kategori
                             </th>
@@ -52,6 +55,11 @@
                     <tbody>
                         @foreach (var x in Model)
                         {
+                            string durumClass = (x.TitleStatus == true) ? "badge badge-success" : "badge badge-danger";
+                            string durumMetin = (x.TitleStatus == true) ? "Aktif" : "Pasif";
+                            string durumBoolean = (x.TitleStatus == true) ? "true" : "false"; 
+                            string durumGosterim = $"{durumMetin}"; 
+
                             if (x.Category.CategoryName == "Dizi")
                             {
                                 color = "badge badge-success";
@@ -62,11 +70,11 @@
                             }
                             else if (x.Category.CategoryName == "Kitap")
                             {
-                                color = "badge badge-info";
+                                color = "badge badge-info"; 
                             }
                             else if (x.Category.CategoryName == "Tiyatro")
                             {
-                                color = "badge badge-secondary";
+                                color = "badge badge-secondary"; 
                             }
                             else if (x.Category.CategoryName == "Eğitim")
                             {
@@ -74,11 +82,19 @@
                             }
                             else if (x.Category.CategoryName == "Sosyal Medya")
                             {
-                                color = "badge badge-success";
+                                color = "badge badge-success"; 
                             }
                             else if (x.Category.CategoryName == "Spor")
                             {
                                 color = "badge badge-info";
+                            }
+                            else if (x.Category.CategoryName == "Blog")
+                            {
+                                color = "badge badge-primary"; 
+                            }
+                            else
+                            {
+                                color = "badge badge-light";
                             }
 
                             <tr>
@@ -100,6 +116,9 @@
                                             <img alt="Avatar" class="table-avatar" src="@x.Writer.WriterImage">
                                         </li>
                                     </ul>
+                                </td>
+                                <td class="project-state">
+                                    <span class="@durumClass">@durumGosterim</span>
                                 </td>
                                 <td class="project-state">
                                     <span class="@color">@x.Category.CategoryName</span>

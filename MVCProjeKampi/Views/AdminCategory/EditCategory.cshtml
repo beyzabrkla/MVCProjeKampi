@@ -6,17 +6,25 @@
 <br />
 <h2>Kategori Güncelleme Sayfası</h2>
 @using (Html.BeginForm("EditCategory", "AdminCategory", FormMethod.Post))
-            {
-                <div class="form-group">
-                    @Html.Label("Kategori Id")
-                    @Html.TextBoxFor(x => x.CategoryId, new {@class="form-control"})
-                    <br />
-                    @Html.Label("Kategori Adı")
-                    @Html.TextBoxFor(x => x.CategoryName, new { @class = "form-control" })
-                    <br />
-                    @Html.Label("Kategori Açıklaması")
-                    @Html.TextAreaFor(x => x.CategoryDescription, new { @class = "form-control" })
-                    <br />
-                    <button class="btn btn-success">Güncelle</button>
-                </div>
-            }
+{
+    <div class="form-group">
+
+        @Html.Label("Kategori Id")
+        @Html.TextBoxFor(x => x.CategoryId, new { @class = "form-control", @readonly = "readonly" })
+        <br />
+
+        @Html.Label("Kategori Adı")
+        @Html.TextBoxFor(x => x.CategoryName, new { @class = "form-control" })
+        <br />
+
+        @Html.Label("Kategori Açıklaması")
+        @Html.TextAreaFor(x => x.CategoryDescription, new { @class = "form-control" })
+        <br />
+
+        @Html.Label("Kategori Durumu")
+        @Html.DropDownListFor(x => x.CategoryStatus, (List<SelectListItem>)ViewBag.vls, new { @class = "form-control" })
+        <br />
+
+        <button class="btn btn-success">Güncelle</button>
+    </div>
+}

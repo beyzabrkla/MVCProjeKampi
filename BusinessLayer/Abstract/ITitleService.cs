@@ -15,5 +15,6 @@ namespace BusinessLayer.Abstract
         Title GetById(int id);
         void TitleDelete(Title title);
         void TitleUpdate(Title title);
+        List<Title> GetTitlesByCategoryId(int id);
     }
 }

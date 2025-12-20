@@ -11,13 +11,19 @@
         @Html.HiddenFor(x => x.TitleId)
         @Html.HiddenFor(x => x.TitleDate)
         @Html.HiddenFor(x => x.WriterId)
+
         @Html.Label("Başlık")
         @Html.TextBoxFor(x => x.TitleName, new { @class = "form-control" })
         <br />
+
         @Html.Label("Kategori")
         @Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.vlc, new { @class = "form-control" })
-        <br /> 
+        <br />
+
+        @Html.Label("Başlık Durumu")
+        @Html.DropDownListFor(x => x.TitleStatus, (List<SelectListItem>)ViewBag.vls, new { @class = "form-control" })
+        <br />
+
         <button class="btn btn-success">Güncelle</button>
     </div>
 }
-

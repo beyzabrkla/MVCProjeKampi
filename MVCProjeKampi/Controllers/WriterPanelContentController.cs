@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Abstract;
 using EntityLayer.Concrete;
+using MVCProjeKampi.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Web.Mvc;
 
 namespace MVCProjeKampi.Controllers
 {
-    [Authorize]
+    [WriterAuthorize]
     public class WriterPanelContentController : BaseWriterPanelController
     {
         private readonly IContentService _contentService;

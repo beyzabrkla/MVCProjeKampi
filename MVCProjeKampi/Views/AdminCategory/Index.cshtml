@@ -20,8 +20,7 @@
             <td>@x.CategoryName</td>
             <td><a href="/AdminCategory/DeleteCategory/@x.CategoryId" class="btn btn-danger">Sil</a></td>
             <td><a href="/AdminCategory/EditCategory/@x.CategoryId" class="btn btn-warning">Güncelle</a></td>
-            <td><a href="#" class="btn btn-primary">Başlıklar</a></td>
-        </tr>
+            <td><a href="/AdminTitle/TitlesByCategory/@x.CategoryId" class="btn btn-primary">Başlıklar</a></td>        </tr>
     }
 </table>
 <a href="/AdminCategory/AddCategory" class="btn btn-info">Yeni Kategori</a>

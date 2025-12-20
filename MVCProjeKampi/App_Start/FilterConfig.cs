@@ -10,6 +10,6 @@ namespace MVCProjeKampi
         {
             filters.Add(new HandleErrorAttribute());
 
-       }
+        }
     }
 }

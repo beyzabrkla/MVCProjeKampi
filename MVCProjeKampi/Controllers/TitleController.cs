@@ -2,6 +2,7 @@
 using BusinessLayer.Concrete;
 using DataAccessLayer.EntityFramework;
 using EntityLayer.Concrete;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +27,13 @@ namespace MVCProjeKampi.Controllers
         }
 
 
-        public ActionResult Index()
+        public ActionResult Index(int page=1)
         {
             var titleValues = _titleService.GetList();
-            return View(titleValues);
+
+            var orderedTitles = titleValues.OrderByDescending(x => x.TitleDate).ToList();
+
+            return View(orderedTitles.ToPagedList(page, 10));
         }
 
         [HttpGet]
@@ -64,15 +68,42 @@ namespace MVCProjeKampi.Controllers
         [HttpGet]
         public ActionResult EditTitle(int id)
         {
+            // 1. Kategori Dropdown Listesi (Mevcut kodunuz)
             List<SelectListItem> valueCategory = (from x in _categoryService.GetList()
                                                   select new SelectListItem
                                                   {
-                                                      Text = x.CategoryName,   // Kullanıcıya gözükecek değer (DisplayMember)
-                                                      Value = x.CategoryId.ToString() // Arkada tutulacak değer (ValueMember)
+                                                      Text = x.CategoryName,
+                                                      Value = x.CategoryId.ToString()
                                                   }).ToList();
             ViewBag.vlc = valueCategory;
-            var TitleValue = _titleService.GetById(id);   
-            return View(TitleValue); 
+
+
+            // 🚀 YENİ EKLENEN BAŞLIK DURUMU İŞLEMLERİ 🚀
+
+            // 2. Başlık durum seçeneklerini oluşturma
+            List<SelectListItem> statusValues = new List<SelectListItem>()
+        {
+            new SelectListItem { Text = "Aktif", Value = "True" },
+            new SelectListItem { Text = "Pasif", Value = "False" }
+        };
+
+            // 3. Mevcut başlık değerini çekme
+            var TitleValue = _titleService.GetById(id);
+
+            // 4. Mevcut duruma göre Dropdown'da seçili (Selected) yapma
+            if (TitleValue.TitleStatus == true)
+            {
+                statusValues.Where(x => x.Value == "True").First().Selected = true;
+            }
+            else // False ise Pasif seçili gelir
+            {
+                statusValues.Where(x => x.Value == "False").First().Selected = true;
+            }
+
+            // 5. ViewBag ile Durum Listesini View'a taşıma
+            ViewBag.vls = statusValues; // vls: Value List Status
+
+            return View(TitleValue);
         }
 
         [HttpPost]
@@ -89,6 +120,5 @@ namespace MVCProjeKampi.Controllers
             _titleService.TitleDelete(titleValue); //title managerdan gelen değeri sil ve ındexe yönlendir
             return RedirectToAction("Index");
         }
-
     }
 }

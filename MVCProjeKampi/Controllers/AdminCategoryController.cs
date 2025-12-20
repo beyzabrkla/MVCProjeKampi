@@ -62,10 +62,29 @@ namespace MVCProjeKampi.Controllers
             return RedirectToAction("Index");
         }
 
+
         [HttpGet]
         public ActionResult EditCategory(int id)
         {
+            List<SelectListItem> statusValues = new List<SelectListItem>()
+            {
+                new SelectListItem { Text = "Aktif", Value = "True" },
+                new SelectListItem { Text = "Pasif", Value = "False" }
+            };
+
             var categoryValue = _categoryService.GetById(id);
+
+            if (categoryValue.CategoryStatus == true)
+            {
+                statusValues.Where(x => x.Value == "True").First().Selected = true;
+            }
+            else if (categoryValue.CategoryStatus == false)
+            {
+                statusValues.Where(x => x.Value == "False").First().Selected = true;
+            }
+
+            ViewBag.vls = statusValues;
+
             return View(categoryValue);
         }
 
@@ -73,7 +92,7 @@ namespace MVCProjeKampi.Controllers
         public ActionResult EditCategory(Category p)
         {
             _categoryService.CategoryUpdate(p);
-           return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
     }
 }

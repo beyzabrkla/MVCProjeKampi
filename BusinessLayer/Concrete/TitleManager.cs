@@ -20,7 +20,7 @@ namespace BusinessLayer.Concrete
 
         public Title GetById(int id)
         {
-            return _uow.Titles.Get(x=>x.TitleId == id);
+            return _uow.Titles.Get(x => x.TitleId == id);
         }
 
         public List<Title> GetList()
@@ -33,6 +33,11 @@ namespace BusinessLayer.Concrete
             return _uow.Titles.List(x => x.WriterId == id, x => x.Writer);
         }
 
+        public List<Title> GetTitlesByCategoryId(int id)
+        {
+            return _uow.Titles.List(x => x.CategoryId == id);
+        }
+
         public void TitleAdd(Title title)
         {
             _uow.Titles.Insert(title);
@@ -41,7 +46,7 @@ namespace BusinessLayer.Concrete
 
         public void TitleDelete(Title title)
         {
-            title.TitleStatus=false;
+            title.TitleStatus = false;
             _uow.Titles.Update(title);
             _uow.Commit();
         }

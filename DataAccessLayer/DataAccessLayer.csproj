@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -178,6 +179,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512061105087_writer_status.resx">
       <DependentUpon>202512061105087_writer_status.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512061411336_content-status-add.resx">
       <DependentUpon>202512061411336_content-status-add.cs</DependentUpon>
