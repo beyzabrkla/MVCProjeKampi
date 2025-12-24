@@ -96,7 +96,7 @@ Silinen tüm mesajlar geçici olarak Çöp Kutusu'nda saklanır ve buradan geri 
 <img width="1919" height="910" alt="13" src="https://github.com/user-attachments/assets/1e2ebc93-d323-4797-a400-3646513f8ae8" />
 
 ### 10. 🖼️ Sözlük Galeri ve Medya Yönetimi
-örsel dosyaların yönetildiği ve **Ekko Lightbox** gibi kütüphanelerle görüntüleme yeteneği sunan Galeri modülü. |
+Görsel dosyaların yönetildiği ve **Ekko Lightbox** gibi kütüphanelerle görüntüleme yeteneği sunan Galeri modülü. |
 <img width="1919" height="919" alt="14" src="https://github.com/user-attachments/assets/96f5a298-2a22-4cbd-b457-7ff1f50749e8" />
 
 ### 11. 🛑 Hata Yönetimi (Özelleştirilmiş Hata Sayfası)
