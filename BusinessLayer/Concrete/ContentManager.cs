@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Abstract;
 using DataAccessLayer.Abstract;
+using DataAccessLayer.EntityFramework;
 using EntityLayer.Concrete;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,14 @@ namespace BusinessLayer.Concrete
                     filter: X => X.WriterId == id,
                     includeProperties: "Title" // İlişkili Başlık (Title) verilerini yükle
                 );
+        }
+
+        public List<Content> GetListWithTitle()
+        {
+            return _uow.Contents.List(
+                filter: null, // Filtre yok, tüm içerikleri getir
+                includeProperties: "Title" // İlişkili Title verisini yükle
+            );
         }
     }
 }

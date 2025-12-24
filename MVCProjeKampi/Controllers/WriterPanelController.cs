@@ -19,21 +19,23 @@ namespace MVCProjeKampi.Controllers
         private readonly ITitleService _titleService;
         private readonly IWriterService _writerService;
         private readonly ICategoryService _categoryService;
+        private readonly IContentService _contentService;
         WriterValidator writerValidator = new WriterValidator();
 
 
-        public WriterPanelController(ITitleService titleService, ICategoryService categoryService, IWriterService writerService, WriterValidator writerValidator)
+        public WriterPanelController(ITitleService titleService, ICategoryService categoryService, IWriterService writerService, WriterValidator writerValidator, IContentService contentService)
         {
             _titleService = titleService;
             _categoryService = categoryService;
             _writerService = writerService;
+            _contentService = contentService;
             this.writerValidator = writerValidator;
         }
 
         [HttpGet]
         public ActionResult WriterProfile()
-        {       
-            string mail = (string)Session["WriterMail"];
+        {
+            string mail = GetUserMail();
             int writerId = _writerService.GetWriterIdByMail(mail);
             var writervalue = _writerService.GetById(writerId);
             return View(writervalue);
@@ -61,7 +63,7 @@ namespace MVCProjeKampi.Controllers
         public ActionResult MyTitle()
         {
             //Session'dan yazarın mail adresini al
-            string p = (string)Session["WriterMail"];
+            string p = GetUserMail();
 
             // Yazar ID'sini bulmak için IWriterService'i kullan.
             int writerId = _writerService.GetWriterIdByMail(p);
@@ -156,6 +158,18 @@ namespace MVCProjeKampi.Controllers
         {
             var titleValue = _titleService.GetList().ToPagedList(page,5);
             return View(titleValue);
+        }
+        public ActionResult WriterContents(int id)
+        {
+            // 1. O anki başlığın ID'si
+            ViewBag.TitleId = id;
+
+            // 2. Servis metodu ile filtrelenmiş içerikleri çek
+            // Bu metodunuzun Writer ve Title nesnelerini EAGER LOADING ile getirdiğinden emin olun (Include).
+            var contentValues = _contentService.GetListByTitleId(id);
+
+            // 3. View'a gönder
+            return View(contentValues);
         }
     }
 }

@@ -120,5 +120,13 @@ namespace MVCProjeKampi.Controllers
             _titleService.TitleDelete(titleValue); //title managerdan gelen değeri sil ve ındexe yönlendir
             return RedirectToAction("Index");
         }
+
+        public ActionResult TitleReport(int? id)
+        {
+            var titleValues = _titleService.GetListWithWriterAndCategory();
+
+            // View'a veriyi gönderin.
+            return View(titleValues);
+        }
     }
 }

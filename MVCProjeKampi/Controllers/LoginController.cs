@@ -48,7 +48,7 @@ namespace MVCProjeKampi.Controllers
             {
                 FormsAuthentication.SetAuthCookie(admin.AdminUserName, false);
 
-                Session["AdminUserName"] = admin.AdminUserName;
+                Session["AdminMail"] = admin.AdminUserName;
 
                 // KRİTİK EKLENTİ: SenderMail'in NULL geçmesini engeller
                 Session["AdminMail"] = admin.AdminUserName; // <-- ARTIK DOĞRU MAİL ADRESİNİ ÇEKECEK

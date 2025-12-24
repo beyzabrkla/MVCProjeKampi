@@ -1,14 +1,12 @@
 ﻿@using EntityLayer.Concrete
 @model List<Message>
 @{
-    ViewBag.Title = "Drafts";
+    ViewBag.Title = "Taslaklar";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <body class="hold-transition sidebar-mini">
 
-    <!-- Content Wrapper. Contains page content -->
-    <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -16,117 +14,148 @@
                     <h1>Taslaklar</h1>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- Main content -->
+
     <section class="content">
         <div class="row">
-            <!-- /.col -->
             @Html.Action("ContactPartial", "Contact")
             <div class="col-md-9">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
                         <h3 class="card-title">Kaydedilmiş Mesajlar</h3>
                         <div class="card-tools">
-                            <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" placeholder="Mail Kutusunda Ara">
-                                <div class="input-group-append">
-                                    <div class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
+                            @using (Html.BeginForm("Drafts", "Message", FormMethod.Get))
+                            {
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="search" class="form-control" placeholder="Mail Kutusunda Ara" value="@ViewBag.CurrentSearch">
+
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- /.card-tools -->
-                    </div>
-                    <!-- /.card-header -->
+                            }
+                        </div>                    </div>
+
                     <div class="card-body p-0">
-                        <div class="mailbox-controls">
-                        </div>
-                        <div class="table-responsive mailbox-messages">
-                            <table class="table table-hover table-striped">
-                                <tbody>
-                                    @foreach (var x in Model)
-                                    {
+
+                        <form id="bulkDraftActionForm" method="post">
+                            <div class="table-responsive mailbox-messages">
+                                <table class="table table-hover table-striped">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <div class="icheck-primary">
-                                                    <input type="checkbox" value="" id="check@(x.MessageId)">
-                                                    <label for="check@(x.MessageId)"></label>
-                                                </div>
-                                            </td>
-
-                                            <td class="mailbox-star">
-                                                <a href="/Message/NewMessage/@x.MessageId">
-                                                    <i class="fas fa-edit text-info"></i>
-                                                </a>
-                                            </td>
-
-                                            <td class="mailbox-name">
-                                                <a href="/Message/NewMessage/@x.MessageId">
-                                                    @(string.IsNullOrEmpty(x.ReceiverMail) ? "Alıcı Yok" : x.ReceiverMail)
-                                                </a>
-                                            </td>
-
-                                            <td class="mailbox-subject">
-                                                <a href="/Message/NewMessage/@x.MessageId">
-                                                    <b>@x.Subject</b> - @( !string.IsNullOrEmpty(x.MessageContent) && x.MessageContent.Length > 50
-                                                                    ? x.MessageContent.Substring(0, 50) + "..."
-                                                                    : x.MessageContent ?? "" )
-                                                </a>
-                                            </td>
-
-                                            <td class="mailbox-attachment"></td>
-
-                                            <td class="mailbox-date">
-                                                @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))
-                                            </td>
-
-                                            <td>
-                                                <a href="/Message/MessageMoveToTrash/@x.MessageId" class="btn btn-default btn-sm"
-                                                   title="Taslağı Sil (Çöp Kutusuna Taşı)"
-                                                   onclick="return confirm('Bu taslağı çöp kutusuna taşımak istediğinizden emin misiniz?')">
-                                                    <i class="far fa-trash-alt"></i>
-                                                </a>
-                                            </td>
+                                            <th style="width: 20px;"></th>
+                                            <th style="width: 30px;"></th>
+                                            <th>Alıcı</th>
+                                            <th>Konu / İçerik Özeti</th>
+                                            <th style="width: 150px;">Kaydetme Tarihi</th>
+                                            <th style="width: 80px;">İşlem</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>                 
-                    <!-- /.card-body -->
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var x in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="icheck-primary">
+                                                        <input type="checkbox" name="selectedDraftIds" value="@x.MessageId" id="check@(x.MessageId)">
+                                                        <label for="check@(x.MessageId)"></label>
+                                                    </div>
+                                                </td>
+
+                                                <td class="mailbox-star">
+                                                    <a href="/Message/NewMessage/@x.MessageId" title="Düzenle">
+                                                        <i class="fas fa-edit text-info"></i>
+                                                    </a>
+                                                </td>
+
+                                                <td class="mailbox-name">
+                                                    <a href="/Message/NewMessage/@x.MessageId">
+                                                        @(string.IsNullOrEmpty(x.ReceiverMail) ? "Alıcı Yok" : x.ReceiverMail)
+                                                    </a>
+                                                </td>
+
+                                                <td class="mailbox-subject">
+                                                    <a href="/Message/NewMessage/@x.MessageId">
+                                                        <b>@x.Subject</b>
+                                                        @if (!string.IsNullOrEmpty(x.MessageContent))
+                                                        {
+                                                            @Html.Raw(" - ")
+                                                            @(x.MessageContent.Length > 50 ? x.MessageContent.Substring(0, 50) + "..." : x.MessageContent)
+                                                        }
+                                                    </a>
+                                                </td>
+
+                                                <td class="mailbox-date">
+                                                    @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))
+                                                </td>
+
+                                                <td>
+                                                    <a href="/Message/MessageMoveToTrash/@x.MessageId" class="btn btn-default btn-sm"                             title="Taslağı Sil (Çöp Kutusuna Taşı)"
+                                                                                   onclick="return confirm('Bu taslağı çöp kutusuna taşımak istediğinizden emin misiniz?')">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="card-footer p-0">
                         <div class="mailbox-controls">
-                            <!-- Check all button -->
                             <button type="button" class="btn btn-default btn-sm checkbox-toggle">
                                 <i class="far fa-square"></i>
                             </button>
+
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-sm"><i class="far fa-trash-alt"></i></button>
-                                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-reply"></i></button>
-                                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i></button>
+                                <button type="button" class="btn btn-default btn-sm" id="bulkDeleteDraftsBtn" title="Seçilileri Çöp Kutusuna Taşı">
+                                    <i class="far fa-trash-alt"></i> Sil
+                                </button>
                             </div>
-                            <!-- /.btn-group -->
-                            <button type="button" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></button>
+
+                            <a href="/Message/Drafts" class="btn btn-default btn-sm" title="Yenile">
+                                <i class="fas fa-sync-alt"></i>
+                            </a>
+
                             <div class="float-right">
                                 1-50/200
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-sm"><i class="fas fa-chevron-left"></i></button>
                                     <button type="button" class="btn btn-default btn-sm"><i class="fas fa-chevron-right"></i></button>
                                 </div>
-                                <!-- /.btn-group -->
                             </div>
-                            <!-- /.float-right -->
                         </div>
                     </div>
                 </div>
-                <!-- /.card -->
             </div>
-            <!-- /.col -->
         </div>
-        <!-- /.row -->
     </section>
 </body>
 
+<script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+<script>
+    // Tüm Checkbox'ları Seç/Bırak
+    $('.checkbox-toggle').on('click', function () {
+        var checked = $('.mailbox-messages input[type="checkbox"]').first().prop('checked');
+        $('.mailbox-messages input[type="checkbox"]').prop('checked', !checked);
+    });
 
+    $('#bulkDeleteDraftsBtn').on('click', function () {
+        if ($('input[name="selectedDraftIds"]:checked').length > 0) {
+            if (confirm('Seçili taslakları çöp kutusuna taşımak istediğinizden emin misiniz?')) {
+                // Formun action'ını Controller'daki YENİ metot olan 'MoveDraftsToTrash' olarak ayarla ve gönder
+                $('#bulkDraftActionForm').attr('action', '/Message/MoveDraftsToTrash');
+
+                // selectedDraftIds isimli inputları gönderdiğimizden emin olmak için form submit ediliyor.
+                $('#bulkDraftActionForm').submit();
+            }
+        } else {
+            alert('Lütfen silmek için en az bir taslak seçin.');
+        }
+    });
+</script>

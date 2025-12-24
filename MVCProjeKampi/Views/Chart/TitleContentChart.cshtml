@@ -1,0 +1,80 @@
+﻿@{
+    // Bu kısım zaten var
+    ViewBag.Title = "TitleContentChart";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // AJAX ile ChartController'daki JSON aksiyonundan veriyi çekiyoruz
+        $.ajax({
+            type: "POST", // POST ya da GET olabilir, burada POST varsayılıyor
+            dataType: "json",
+            contentType: "application/json",
+            // Controller: Chart, Aksiyon: VisualizeContentResult (JSON veriyi döndüren metot)
+            url: '@Url.Action("VisualizeContentResult", "Chart")',
+            success: function (result) {
+                // Google Charts kütüphanesini yükle
+                google.charts.load('current', {
+                    'packages': ['corechart']
+                });
+                // Kütüphane yüklendikten sonra grafiği çiz
+                google.charts.setOnLoadCallback(function () {
+                    drawChart(result);
+                });
+            },
+            error: function (xhr, status, error) {
+                // Hata durumunda konsola yazdır (debug için faydalı)
+                console.error("AJAX Veri Çekme Hatası:", status, error);
+                console.error("Yanıt Metni:", xhr.responseText);
+            }
+        });
+    });
+
+    function drawChart(result) {
+        // 1. Veri tablosunu oluştur
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Başlık Adı'); // ViewModel'deki TitleName'e karşılık gelir
+        data.addColumn('number', 'İçerik Sayısı'); // ViewModel'deki ContentCount'a karşılık gelir
+        var dataArray = [];
+
+        // 2. JSON sonucunu Data Array'e dönüştür
+        $.each(result, function (i, obj) {
+            // obj.TitleName ve obj.ContentCount, ContentCountByTitle sınıfından gelmeli
+            dataArray.push([obj.TitleName, obj.ContentCount]);
+        });
+        data.addRows(dataArray);
+
+        // 3. Grafik Seçeneklerini (Options) belirle
+        var chartOptions = {
+            title: "Başlıklara Göre İçerik Yoğunluğu Yüzdesi",
+            width: '100%', // Sayfanın genişliğine uyum sağlar
+            height: 600,
+            is3D: true, // 3D efekt ekleyebilirsiniz
+            titleTextStyle: { fontSize: 20 },
+            legend: { position: 'right', textStyle: { fontSize: 14 } }
+        };
+
+        // 4. Grafiği oluştur ve çiz
+        var pieChart = new google.visualization.PieChart(document
+            .getElementById('Piechart_div'));
+
+        pieChart.draw(data, chartOptions);
+    }
+</script>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Başlıklar Bazında İçerik Dağılım Grafiği</h3>
+            </div>
+            <div class="card-body">
+                <div id="Piechart_div" style="min-height: 500px;"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,7 +12,6 @@ namespace DataAccessLayer.Concrete
     {
         private readonly Context _context;
 
-        private EFAboutDal _aboutDal; 
         private EFAdminDal _adminDal;
         private EFCategoryDal _categoryDal;
         private EFContactDal _contactDal;
@@ -29,7 +28,6 @@ namespace DataAccessLayer.Concrete
 
 
         // --- Repository Erişim Property'leri ---
-        public IAboutDal Abouts => _aboutDal ??(_aboutDal= new EFAboutDal(_context));
         public IAdminDal Admins => _adminDal ?? (_adminDal = new EFAdminDal(_context));
         public ICategoryDal Categories => _categoryDal ?? (_categoryDal = new EFCategoryDal(_context));
         public IContactDal Contacts => _contactDal ?? (_contactDal = new EFContactDal(_context));

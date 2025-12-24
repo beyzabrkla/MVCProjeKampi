@@ -1,38 +1,61 @@
 ﻿@using EntityLayer.Concrete
 @model List<Message>
 @{
-    ViewBag.Title = "TrashBox";
+    ViewBag.Title = "Çöp Kutusu";
     Layout = "~/Views/Shared/_WriterLayout.cshtml";
-    List<Contact> contactTrashList = ViewBag.ContactTrash as List<Contact>;
+
+    List<Contact> contactTrashList = ViewBag.ContactTrash as List<Contact> ?? new List<Contact>();
     string userMail = (string)Session["WriterMail"];
 }
 
-<body class="hold-transition sidebar-mini">
-
-    <!-- Content Wrapper. Contains page content -->
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Çöp Kutusu</h1>
-                </div>
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Çöp Kutusu</h1>
             </div>
-        </div><!-- /.container-fluid -->
-    </section>
+        </div>
+    </div>
+</section>
 
-    <section class="content">
-        <div class="row">
-            @Html.Action("ContactPartial", "Contact")
-            <div class="col-md-9">
-                <div class="card card-primary card-outline">
-                    <div class="card-header"><h3 class="card-title">Merkezi Çöp Kutusu</h3></div>
+<section class="content">
+    <div class="row">
 
+        @Html.Action("MessageListMenu", "WriterPanelMessage")
+
+        <div class="col-md-9">
+            <div class="card card-primary card-outline">
+
+                <div class="card-header">
+                    <h3 class="card-title">Çöp Kutusu Mesajları</h3>
+
+                    <div class="card-tools">
+                        @using (Html.BeginForm("TrashBox", "WriterPanelMessage", FormMethod.Get))
+                        {
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="search" id="tableSearch" class="form-control"
+                                       placeholder="Mail Kutusunda Ara" value="@ViewBag.CurrentSearch">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <form id="bulkActionFormTrash" method="post">
                     <div class="card-body p-0">
                         <div class="table-responsive mailbox-messages">
-                            <table class="table table-hover table-striped">
+                            <table class="table table-hover table-striped" id="trashTable">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <button type="button" class="btn btn-default btn-sm checkbox-toggle-trash">
+                                                <i class="far fa-square"></i>
+                                            </button>
+                                        </th>
                                         <th>Kaynak</th>
                                         <th>Kimden/Kime</th>
                                         <th>Konu</th>
@@ -42,64 +65,82 @@
                                 </thead>
                                 <tbody>
 
-                                    @* A. SİLİNMİŞ İLETİŞİM MESAJLARI (Contact) *@
-                                    @if (contactTrashList != null)
+                                    @* 1. İLETİŞİM (CONTACT) MESAJLARI *@
+                                    @foreach (var x in contactTrashList)
                                     {
-                                        foreach (var x in contactTrashList)
-                                        {
-                                            <tr class="table-danger">
-                                                <td><span class="badge badge-danger">İletişim</span></td>
-
-                                                @* Contact mesajları size (Admin/Yöneticiye) geldiği için, direkt göndereni gösteririz. *@
-                                                <td>Gönderen: @x.UserName (@x.UserMail)</td>
-
-                                                <td><a href="/Contact/GetContactDetails/@x.ContactId">@x.Subject</a></td>
-
-                                                @* ContactDate, mesajın alındığı orijinal tarihtir (silinme tarihi yerine). *@
-                                                <td>@(((DateTime)x.ContactDate).ToString("dd-MMM-yyyy"))</td>
-
-                                                <td>
-                                                    <a href="/Contact/ContactRestore/@x.ContactId" class="btn btn-warning btn-sm" onclick="return confirm('Bu mesajı Gelen Kutusu\'na geri yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i> Geri Yükle</a>
-                                                    <a href="/Contact/ContactHardDelete/@x.ContactId" class="btn btn-danger btn-sm"
-                                                       title="Kalıcı Olarak Sil"
-                                                       onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
-                                                        <i class="fas fa-times"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        }
+                                        <tr class="table-danger">
+                                            <td>
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" name="selectedContactIds" value="@x.ContactId" id="conCheck_@x.ContactId">
+                                                    <label for="conCheck_@x.ContactId"></label>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge badge-danger">İletişim</span></td>
+                                            <td>Gönderen: @x.UserName</td>
+                                            <td>
+                                                <a href="/Contact/GetContactDetails/@x.ContactId" class="text-dark">
+                                                    @x.Subject
+                                                </a>
+                                            </td>
+                                            <td>@(((DateTime)x.ContactDate).ToString("dd-MMM-yyyy"))</td>
+                                            <td>
+                                                @* İletişim mesajları için Geri Yükle ve Kalıcı Silme linkleri (Admin linkleri, yazar panelinde sadece görüntülenmeli) *@
+                                                <a href="/Contact/ContactRestore/@x.ContactId" class="btn btn-warning btn-sm" onclick="return confirm('Bu iletişim mesajını Geri Yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i></a>
+                                                <a href="/Contact/ContactHardDelete/@x.ContactId" class="btn btn-danger btn-sm" title="Kalıcı Olarak Sil" onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
                                     }
 
-                                    @* B. SİLİNMİŞ KULLANICI MESAJLARI (Message) *@
+                                    @* 2. SİSTEM (MESSAGE) MESAJLARI *@
                                     @foreach (var x in Model)
                                     {
-                                        <tr class="table-warning">
-                                            <td><span class="badge badge-warning">Mesaj</span></td>
+                                        // Satır rengi ve etiket rengini belirle
+                                        string badgeClass = "badge-secondary";
+                                        string sourceName = "Bilinmiyor";
+                                        string detailLink = ""; // Mesaj detay linki
 
-                                            @* Kimden/Kime Mantığı: Eğer SenderMail, oturumdaki mail ise, bu bir Giden Mesajdır. Değilse, Gelen Mesajdır. *@
+                                        if (x.SourceFolder == "Gelen") { badgeClass = "badge-success"; sourceName = "Gelen Kutusu"; detailLink = "/WriterPanelMessage/GetInboxMessageDetails/" + x.MessageId; }
+                                        else if (x.SourceFolder == "Giden") { badgeClass = "badge-info"; sourceName = "Giden Kutusu"; detailLink = "/WriterPanelMessage/GetSendBoxMessageDetails/" + x.MessageId; }
+                                        else if (x.SourceFolder == "Taslak") { badgeClass = "badge-warning"; sourceName = "Taslak"; detailLink = "/WriterPanelMessage/GetDraftMessageDetails/" + x.MessageId; }
+
+                                        <tr class="table-warning">
+                                            <td>
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" name="selectedMessageIds" value="@x.MessageId" id="msgCheck_@x.MessageId">
+                                                    <label for="msgCheck_@x.MessageId"></label>
+                                                </div>
+                                            </td>
+
+                                            @* Kaynak Sütunu (Düzeltildi) *@
+                                            <td>
+                                                <span class="badge @badgeClass">@sourceName</span>
+                                            </td>
+
+                                            @* Kimden/Kime *@
                                             <td>
                                                 @if (x.SenderMail == userMail)
                                                 {
-                                                    // Mesajı SİZ gönderdiniz (Giden Kutusu'ndan silindi)
-                                                    <span>Kime: **@x.ReceiverMail**</span>
+                                                    <span>Kime: <b>@x.ReceiverMail</b></span>
                                                 }
                                                 else
                                                 {
-                                                    // Mesaj SİZE geldi (Gelen Kutusu'ndan silindi)
-                                                    <span>Kimden: **@x.SenderMail**</span>
+                                                    <span>Kimden: <b>@x.SenderMail</b></span>
                                                 }
                                             </td>
 
-                                            <td><a href="/WriterPanelMessage/GetInboxMessageDetails/@x.MessageId">@x.Subject</a></td>
-
-                                            @* MessageDate, mesajın gönderildiği orijinal tarihtir. *@
+                                            <td>
+                                                <a href="@detailLink" class="text-dark">
+                                                    @x.Subject
+                                                </a>
+                                            </td>
                                             <td>@(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))</td>
 
+                                            @* Tekli İşlemler *@
                                             <td>
-                                                <a href="/Message/MessageRestore/@x.MessageId" class="btn btn-warning btn-sm" onclick="return confirm('Bu mesajı Gelen Kutusu\'na geri yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i> Geri Yükle</a>
-                                                <a href="/Message/MessageHardDelete/@x.MessageId" class="btn btn-danger btn-sm"
-                                                   title="Kalıcı Olarak Sil"
-                                                   onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
+                                                <a href="/WriterPanelMessage/MessageRestore/@x.MessageId" class="btn btn-warning btn-sm" onclick="return confirm('Bu mesajı Geri Yüklemek istediğinizden emin misiniz?')"><i class="fas fa-redo"></i></a>
+                                                <a href="/WriterPanelMessage/MessageHardDelete/@x.MessageId" class="btn btn-danger btn-sm" title="Kalıcı Olarak Sil" onclick="return confirm('UYARI: Bu mesaj kalıcı olarak silinecektir. Emin misiniz?')">
                                                     <i class="fas fa-times"></i>
                                                 </a>
                                             </td>
@@ -109,9 +150,86 @@
                             </table>
                         </div>
                     </div>
-                </div>
+
+                    <div class="card-footer p-0">
+                        <div class="mailbox-controls">
+                            <div class="float-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-warning btn-sm" id="bulkRestoreBtn">
+                                        <i class="fas fa-redo"></i> Seçileni Geri Yükle
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" id="bulkHardDeleteBtn">
+                                        <i class="far fa-trash-alt"></i> Seçileni Kalıcı Sil
+                                    </button>
+                                </div>
+                                <a href="/WriterPanelMessage/TrashBox" class="btn btn-default btn-sm" title="Yenile">
+                                    <i class="fas fa-sync-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
-</body>
+    </div>
+</section>
 
+<script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        // 1. CANLI ARAMA (Live Search) FONKSİYONU
+        // Sunucudan gelen arama sonucu listelenmiş olsa bile, canlı arama ile ekstra filtreleme yapar.
+        $("#tableSearch").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#trashTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        // 2. CHECKBOX TOGGLE (Tümünü Seç/Bırak) - Mevcut kod doğruydu
+        $('.checkbox-toggle-trash').on('click', function () {
+            var clicks = $(this).data('clicks');
+            if (clicks) {
+                // Hepsini Bırak
+                $('.mailbox-messages input[type="checkbox"]').prop('checked', false);
+                $('.checkbox-toggle-trash i').removeClass('fa-check-square').addClass('fa-square');
+            } else {
+                // Hepsini Seç
+                $('.mailbox-messages input[type="checkbox"]').prop('checked', true);
+                $('.checkbox-toggle-trash i').removeClass('fa-square').addClass('fa-check-square');
+            }
+            $(this).data('clicks', !clicks);
+        });
+
+        // 3. TOPLU GERİ YÜKLEME - Mevcut kod doğruydu
+        $('#bulkRestoreBtn').on('click', function () {
+            var checkedCount = $('input[name="selectedMessageIds"]:checked').length + $('input[name="selectedContactIds"]:checked').length;
+
+            if (checkedCount > 0) {
+                if (confirm('Seçili ' + checkedCount + ' öğeyi Geri Yüklemek istediğinizden emin misiniz?')) {
+                    // **Action URL'si güncellendi**
+                    $('#bulkActionFormTrash').attr('action', '/WriterPanelMessage/TrashRestoreMessages');
+                    document.getElementById('bulkActionFormTrash').submit();
+                }
+            } else {
+                alert('Lütfen işlem yapmak için en az bir mesaj seçin.');
+            }
+        });
+
+        // 4. TOPLU KALICI SİLME - Mevcut kod doğruydu
+        $('#bulkHardDeleteBtn').on('click', function () {
+            var checkedCount = $('input[name="selectedMessageIds"]:checked').length + $('input[name="selectedContactIds"]:checked').length;
+
+            if (checkedCount > 0) {
+                if (confirm('UYARI: Seçili ' + checkedCount + ' öğe KALICI OLARAK silinecektir. Emin misiniz?')) {
+                    // **Action URL'si güncellendi**
+                    $('#bulkActionFormTrash').attr('action', '/WriterPanelMessage/TrashHardDeleteMessages');
+                    document.getElementById('bulkActionFormTrash').submit();
+                }
+            } else {
+                alert('Lütfen işlem yapmak için en az bir mesaj seçin.');
+            }
+        });
+    });
+</script>

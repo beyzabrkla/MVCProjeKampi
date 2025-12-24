@@ -5,6 +5,7 @@ namespace BusinessLayer.Abstract
 {
     public interface IContactService
     {
+        List<Contact> GetUnreadContacts();
         List<Contact> GetList();
         void ContactAdd(Contact contact);
         Contact GetById(int id);
@@ -12,6 +13,7 @@ namespace BusinessLayer.Abstract
         void ContactUpdate(Contact contact);
         void ContactMoveToTrash(int id);
         void ContactRestore(int id);
-        int GetContactCountNonTrash();                                                                                                                                                                          
+        int GetContactCountNonTrash();
+        List<Contact> GetListTrash();
     }
 }

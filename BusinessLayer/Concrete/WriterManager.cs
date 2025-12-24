@@ -1,6 +1,7 @@
 ﻿using BusinessLayer.Abstract;
 using DataAccessLayer.Abstract;
 using DataAccessLayer.Concrete;
+using DataAccessLayer.EntityFramework;
 using EntityLayer.Concrete;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace BusinessLayer.Concrete
         {
             _uow = uow;
         }
-
         public void WriterAdd(Writer writer)
         {
             _uow.Writers.Insert(writer); // UOW üzerinden Repository'yi çağırır
@@ -31,12 +31,20 @@ namespace BusinessLayer.Concrete
             return _uow.Writers.List();
         }
 
+        public List<Writer> GetTrashList()
+        {
+            // YALNIZCA WriterStatus=FALSE (Pasif/Silinmiş) olan yazarları çekiyoruz
+            return _uow.Writers.List(x => x.WriterStatus == false); // <<< Düzeltme: IsTrash yerine WriterStatus
+        }
+
         public void WriterDelete(Writer writer)
         {
-            // Yazarın durumunu pasif/silinmiş olarak işaretle (Soft Delete)
+            // Soft Delete (Yumuşak Silme) yapılır: Durumu pasif (false) olarak ayarla
             writer.WriterStatus = false;
-            _uow.Writers.Delete(writer);
-            _uow.Commit(); 
+
+            // Veritabanında güncelleme yapılmalıdır, silme değil!
+            _uow.Writers.Update(writer); // <<< Düzeltme: Delete yerine Update
+            _uow.Commit();
         }
 
         public void WriterUpdate(Writer writer)

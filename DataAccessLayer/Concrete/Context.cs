@@ -10,9 +10,6 @@ namespace DataAccessLayer.Concrete
 {
     public class Context : DbContext //db context sınıfına ait özellikler context sınıfına miras olarak verildi
     {
-        public DbSet<About> Abouts { get; set; } //Entity katmanındaki About sınıfı ile ilgili işlemler için DbSet tanımlandı
-                                                 // Abouts sql kısmındaki Abouts tablosuna karşılık gelir
-
         public DbSet<Category> Categories { get; set; }
         public DbSet<Contact>Contacts { get; set; }
         public DbSet<Content>Contents { get; set; }

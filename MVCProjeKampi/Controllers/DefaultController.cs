@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Abstract;
 using EntityLayer.Concrete;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,37 +21,49 @@ namespace MVCProjeKampi.Controllers
 
         public ActionResult Titles(int? id)
         {
-            // 1. Sağ içerik için ID'yi ayarla:
-            // Eğer URL'de bir ID varsa (id.HasValue), onu kullan.
-            // Eğer URL'de ID yoksa (null), null olarak View'a gönder.
+            // 1. Oturum Kontrolü:
+            // Eğer kullanıcı oturum açmamışsa (WriterMail session'ı boşsa)
+            if (Session["WriterMail"] == null)
+            {
+                // Kullanıcıyı Yazar Giriş sayfasına yönlendir
+                return RedirectToAction("WriterLogin", "Login");
+            }
+
+            // 2. Eğer oturum açıksa, normal işleme devam et:
+
             ViewBag.CurrentTitleId = id;
 
-            // 2. Sol Menü için tüm başlıkları çek.
+            // NOT: Yazar girişi yapıldıktan sonra tüm başlıkları değil, 
+            // sadece ilgili ID'ye ait başlıkları listelemek daha mantıklı olacaktır.
+            // Ancak sizin mevcut kodunuz tüm listeyi getirdiği için, şimdilik bu kısmı koruyorum:
             var titleList = _titleService.GetList();
 
-            // 3. Sol menüdeki başlıklar için Modeli gönder
             return View(titleList);
         }
 
+        // Düzeltme: id parametresini int? olarak değiştiriyoruz.
         public PartialViewResult ContentPartial(int? id)
         {
-            List<Content> contentValues;
-
-            if (id.HasValue)
+            // 1. ID boş (null) ise, ilk aktif başlığın ID'sini varsayılan olarak al.
+            if (id == null)
             {
-                // 1. Durum: ID geldi (Sol menüden tıklandı) -> Sadece o başlığın içeriklerini getir.
-                // Writer ve Title nesnelerini yüklemeyi unutmayın!
-                contentValues = _contentService.GetListByTitleId(id.Value);
-            }
-            else
-            {
-                // 2. Durum: ID gelmedi (Ana sayfaya girildi) -> TÜM içerikleri getir.
-                // ContentManager'da tüm içeriği getiren bir metodunuz olmalı (örneğin GetList).
-                contentValues = _contentService.GetList();
+                var firstTitle = _titleService.GetList().FirstOrDefault(x => x.TitleStatus == true);
+                if (firstTitle != null)
+                {
+                    id = firstTitle.TitleId;
+                }
+                else
+                {
+                    // Hiç başlık yoksa boş liste gönder
+                    return PartialView(new List<Content>());
+                }
             }
 
-            // Content listesini View'a gönder
-            return PartialView(contentValues);
+            // 2. İçerikleri çek (id artık null değildir)
+            var contents = _contentService.GetListByTitleId(id.Value); // id.Value ile int değerini alıyoruz
+
+            // 3. View'a gönder
+            return PartialView(contents);
         }
     }
 }

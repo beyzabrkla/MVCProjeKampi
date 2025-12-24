@@ -1,48 +1,58 @@
 ﻿@using EntityLayer.Concrete
 @model List<Content>
 @{
-    ViewBag.Title = "MyContent";
+    ViewBag.Title = "Yazdığım Tüm İçerikler";
     Layout = "~/Views/Shared/_WriterLayout.cshtml";
 }
-<!DOCTYPE html>
-<html>
-<body class="hold-transition sidebar-mini">
-    <!-- Site wrapper -->
-    <div class="wrapper">
-        <section class="content">
-            <div class="container-fluid">
 
-                <!-- Timelime example  -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <!-- The time line -->
-                        <div class="timeline">
-                            <!-- timeline time label -->
-                            @foreach (var x in Model)
-                            {
-                                <div class="time-label">
-                                    <span class="bg-success">@(((DateTime)x.ContentDate).ToString("dd-MMM-yyyy"))</span>
-                                </div>
-                                <div>
-                                    <i class="fas fa-comment bg-yellow"></i>
-                                    <div class="timeline-item">
-                                        <h3 class="timeline-header"><a href="#">@x.Title.TitleName</a></h3>
-                                        <div class="timeline-body">
-                                            @x.ContentValue
-                                        </div>
-                                    </div>
-                                </div>
-                             }
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Yazdığım Tüm İçerikler</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if (Model != null && Model.Any())
+        {
+            // İçerikleri ters kronolojik sırada tarihe göre grupluyoruz (Aynı gün yazılanlar tek bir başlık altında toplanacak)
+            var groupedContents = Model.OrderByDescending(c => c.ContentDate)
+                                        .GroupBy(c => ((DateTime)c.ContentDate).Date);
+
+            // X: Tarih Grubu
+            foreach (var x in groupedContents)
+            {
+                <h5 class="mt-4 mb-2 text-success">
+                    <strong>@x.Key.ToString("dd-MMM-yyyy").ToUpper()</strong>
+                </h5>
+
+                // Y: O tarihe ait her bir içerik
+                foreach (var y in x)
+                {
+                    <div class="card card-outline card-info">
+                        <div class="card-header bg-white">
+                            <i class="fas fa-dot-circle text-warning mr-2"></i>
+                            <h3 class="card-title text-primary">@y.Title.TitleName</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>@y.ContentValue</p>
+
+                            @* <small class="text-muted float-right">Yazar: <strong>@y.Writer.WriterName</strong></small> *@
                         </div>
                     </div>
-                    <!-- /.col -->
-                </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Henüz yayınlanmış bir içeriğiniz bulunmamaktadır.
             </div>
-            <!-- /.timeline -->
-        </section>
-        <!-- /.content -->
+        }
     </div>
-    <!-- ./wrapper -->
-</body>
-</html>
-
+</section>

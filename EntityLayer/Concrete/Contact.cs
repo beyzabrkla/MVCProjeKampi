@@ -27,5 +27,7 @@ namespace EntityLayer.Concrete
 
         public bool IsTrash { get; set; } // İletişim mesajı çöp kutusunda mı?
         public DateTime? TrashDate { get; set; }
+
+        public bool ContactStatus { get; set; } 
     }
 }

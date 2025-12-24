@@ -27,8 +27,7 @@ namespace EntityLayer.Concrete
         [StringLength(50)]
         public string WriterTitle { get; set; }
         public bool WriterStatus { get; set; }
-
-
+        public bool IsTrash { get; set; }
         public ICollection<Title> Titles { get; set; } //bir yazar birden çok başlıklı yazı yazmış olabilir
         public ICollection<Content> Contents { get; set; } //bir yazar birden çok içerik yazmış olabilir
     }

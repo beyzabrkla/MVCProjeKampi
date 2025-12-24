@@ -12,6 +12,7 @@ namespace BusinessLayer.Abstract
         List<Message> GetList();
         List<Message> GetListInbox(string receiverMail);
         List<Message> GetListSendbox(string senderMail);
+        List<Message> GetListTrash(string userMail);
         void MessageAdd(Message message);   
         Message GetById (int id);
         void MessageDelete(Message message);
@@ -19,9 +20,10 @@ namespace BusinessLayer.Abstract
         List<Message> GetDraftMessages();
         List<Message> GetDraftMessagesBySender(string senderMail);
         List<Message> GetListUnreadInbox(string receiverMail);
+        List<Message> GetUnreadMessages(string receiverMail);
         int GetUnreadMessageCountByReceiver(string receiverMail);
-        void MessageMoveToTrash(int id);
-        void MessageRestore(int id);
+        void MessageMoveToTrash(int id, string userMail);
+        void MessageRestore(int id, string userMail);
         int GetTrashMessageCountByMail(string userMail);
         int GetDraftMessageCountBySender(string userMail);
     }

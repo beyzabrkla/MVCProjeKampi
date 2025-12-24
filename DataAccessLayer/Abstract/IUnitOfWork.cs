@@ -12,7 +12,6 @@ namespace DataAccessLayer.Abstract
     {
         // Repository Erişim Property'leri (Tüm Repository'lere erişim noktası)
         // Manager artık IWriterDal değil, IUnitOfWork üzerinden Writers'a erişir.
-        IAboutDal Abouts { get; }
         IAdminDal Admins { get; }
         ICategoryDal Categories { get; }
         IContactDal Contacts { get; }

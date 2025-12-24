@@ -27,43 +27,101 @@ namespace MVCProjeKampi.Controllers
             this.messagevalidator = messagevalidator;
         }
 
-        public ActionResult Inbox(string status)
+        [HttpGet]
+        public ActionResult Inbox(string search = null) // search parametresi eklendi
         {
-            string userMail = (string)Session["WriterMail"];
-            List<Message> messageList;
+            string userMail = GetUserMail(); // BaseWriterPanelController'dan geliyor
 
-            if (string.IsNullOrEmpty(userMail))
+            // 1. Gelen mesajları çekme (ReceiverMail olanlar)
+            // IMessageService'de GetListInbox metodu veya benzer bir filtreleme metodu olduğunu varsayıyoruz.
+            List<Message> messageList = _messageService.GetListInbox(userMail);
+
+            // =======================================================
+            // ARAMA FİLTRESİ ENTEGRASYONU
+            // =======================================================
+            if (!string.IsNullOrEmpty(search))
             {
-                // Eğer mail adresi çekilemezse, boş bir liste döndür veya yetki hatası ver.
-                return RedirectToAction("Index", "Login"); // Örn: Giriş sayfasına yönlendir
+                string searchLower = search.ToLower();
+
+                // Mesajları Gönderen Mail, Konu veya İçerik üzerinden filtreleme
+                messageList = messageList
+                    .Where(m => (m.SenderMail != null && m.SenderMail.ToLower().Contains(searchLower)) ||
+                                (m.Subject != null && m.Subject.ToLower().Contains(searchLower)) ||
+                                (m.MessageContent != null && m.MessageContent.ToLower().Contains(searchLower)))
+                    .ToList();
             }
 
-            //status değişkeni metodun parametresi olarak tanımlandı.
-            if (status == "unread")
-            {
-                // Okunmamışları filtrele
-                messageList = _messageService.GetListUnreadInbox(userMail);
-            }
-            else
-            {
-                //Tüm gelen mesajları getir (default)
-                messageList = _messageService.GetListInbox(userMail);
-            }
+            // Filtrelemeden sonra tarihe göre sıralama (genellikle en yeni üste)
+            messageList = messageList.OrderByDescending(x => x.MessageDate).ToList();
+
+            // Arama kelimesini input alanında tutmak için View'a gönderiyoruz
+            ViewBag.CurrentSearch = search;
+
             return View(messageList);
         }
 
+        [HttpPost]
+        public ActionResult Inbox(List<int> selectedMessages)
+        {
+            // Bu metot toplu işlem içindir (InboxBulkMoveToTrash'e yönlendirir)
+            return RedirectToAction("InboxBulkMoveToTrash", new { messageIds = selectedMessages });
+        }
+
+        [HttpGet]
+        public ActionResult SendBox(string search = null) // search parametresi eklendi
+        {
+            string userMail = GetUserMail(); // BaseWriterPanelController'dan geliyor
+
+            // 1. Gönderilen mesajları çekme (SenderMail olanlar)
+            // IMessageService'de GetListSendBox metodu veya benzer bir filtreleme metodu olduğunu varsayıyoruz.
+            List<Message> messageList = _messageService.GetListSendbox(userMail);
+
+            // =======================================================
+            // ARAMA FİLTRESİ ENTEGRASYONU
+            // =======================================================
+            if (!string.IsNullOrEmpty(search))
+            {
+                string searchLower = search.ToLower();
+
+                // Mesajları Alıcı Mail, Konu veya İçerik üzerinden filtreleme
+                messageList = messageList
+                    .Where(m => (m.ReceiverMail != null && m.ReceiverMail.ToLower().Contains(searchLower)) ||
+                                (m.Subject != null && m.Subject.ToLower().Contains(searchLower)) ||
+                                (m.MessageContent != null && m.MessageContent.ToLower().Contains(searchLower)))
+                    .ToList();
+            }
+
+            // Filtrelemeden sonra tarihe göre sıralama (genellikle en yeni üste)
+            messageList = messageList.OrderByDescending(x => x.MessageDate).ToList();
+
+            // Arama kelimesini input alanında tutmak için View'a gönderiyoruz
+            ViewBag.CurrentSearch = search;
+
+            return View(messageList);
+        }
+
+        [ChildActionOnly]
         public PartialViewResult MessageListMenu()
         {
+            string userMail = (string)Session["WriterMail"];
+
+            if (string.IsNullOrEmpty(userMail))
+            {
+                userMail = "bosmail@mail.com";
+            }
+
+            // Aksi halde buraya da filtre eklemek gerekir. Şu anki Business katmanınızın filtreden arındırılmış
+            // listeleri getirdiğini varsayarak kodun geri kalanını ona göre güncelleyelim.
+            ViewBag.InboxCount = _messageService.GetListInbox(userMail).Where(x => x.ReceiverTrash == false).Count();
+            ViewBag.SendBoxCount = _messageService.GetListSendbox(userMail).Where(x => x.SenderTrash == false).Count();
+            ViewBag.UnreadCount = _messageService.GetUnreadMessageCountByReceiver(userMail);
+            ViewBag.DraftCount = _messageService.GetDraftMessageCountBySender(userMail);
+
+            // Düzeltme: Çöp kutusundaki toplam mesaj sayısını SenderTrash VEYA ReceiverTrash true olanlar üzerinden hesapla.
+            ViewBag.TrashCount = _messageService.GetTrashMessageCountByMail(userMail);
+
             return PartialView();
         }
-
-        public ActionResult SendBox()
-        {
-            string userMail = (string)Session["WriterMail"]; // Session'dan mail çekilmeli
-            var messagelist = _messageService.GetListSendbox(userMail);
-            return View(messagelist);
-        }
-
 
         public ActionResult GetInboxMessageDetails(int id)
         {
@@ -79,10 +137,10 @@ namespace MVCProjeKampi.Controllers
         public ActionResult GetSendboxMessageDetails(int id)
         {
             var values = _messageService.GetById(id);
-            if (values != null && values.IsRead == false) // Mesaj okunmadıysa
+            if (values != null && values.IsRead == false)
             {
-                values.IsRead = true; // Okundu olarak işaretle
-                _messageService.MessageUpdate(values); // Veritabanına kaydet
+                values.IsRead = true;
+                _messageService.MessageUpdate(values);
             }
             return View(values);
         }
@@ -93,7 +151,7 @@ namespace MVCProjeKampi.Controllers
             if (id.HasValue)
             {
                 var draft = _messageService.GetById(id.Value);
-                return View(draft); // Taslak içeriğini formda gösterecek
+                return View(draft);
             }
             return View();
         }
@@ -102,35 +160,34 @@ namespace MVCProjeKampi.Controllers
         [HttpPost]
         public ActionResult NewMessage(Message p, string action)
         {
-            // Session'dan oturum açan kullanıcının mail adresini çekin
             string userMail = (string)Session["WriterMail"];
 
-            // KRİTİK KONTROL: Mail adresi boşsa veya NULL ise, kullanıcıyı Login'e yönlendir.
             if (string.IsNullOrEmpty(userMail))
             {
-                // Kullanıcıyı Login sayfasına yönlendirerek tekrar oturum açmasını sağlayın
                 return RedirectToAction("Index", "Login");
-                // Veya mesajı kaydetme (db ye NULL geçmesini engellemek için)
             }
 
             p.SenderMail = userMail;
             p.MessageDate = DateTime.Now;
-            var sanitizer = new HtmlSanitizer(); //mesaj içeriğindeki zararlı yazılımlar için 
+            var sanitizer = new HtmlSanitizer();
             p.MessageContent = sanitizer.Sanitize(p.MessageContent);
 
             if (action == "send")
             {
-                // GÖNDERME İŞLEMİ: Fluent Validation kontrolü yapılır.
                 ValidationResult results = messagevalidator.Validate(p);
 
                 if (results.IsValid)
                 {
                     p.IsDraft = false;
-                    // Yeni gönderilen mesajın başlangıçta okunmamış (IsRead=false) olması gerekir.
                     p.IsRead = false;
+
+                    // Gönderilen mesajın çöp kutusu bayraklarını sıfırla
+                    p.SenderTrash = false;
+                    p.ReceiverTrash = false;
+
                     if (p.MessageId > 0)
                     {
-                        // Mevcut taslağı güncelle
+                        // Mevcut taslağı gönderirken güncelle
                         _messageService.MessageUpdate(p);
                     }
                     else
@@ -154,120 +211,307 @@ namespace MVCProjeKampi.Controllers
             {
                 // TASLAK İŞLEMİ
                 p.IsDraft = true;
-                p.IsRead = true; // Taslaklar genelde okundu sayılır.
+                p.IsRead = true;
+
+                // Taslaklar çöp kutusunda değil, bu yüzden bayrakları sıfırlıyoruz.
+                p.SenderTrash = false;
+                p.ReceiverTrash = false;
+
                 if (p.MessageId > 0)
                 {
-                    // Mevcut taslağı güncelle
                     _messageService.MessageUpdate(p);
                 }
                 else
                 {
-                    // Yeni taslağı ekle
                     _messageService.MessageAdd(p);
                 }
             }
             return RedirectToAction("Drafts");
         }
 
-        public ActionResult Drafts()
+        [HttpGet] 
+        public ActionResult Drafts(string search = null)
         {
-            string userMail = (string)Session["WriterMail"];
+            string userMail = GetUserMail();
+
             if (string.IsNullOrEmpty(userMail))
             {
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Login", "WriterPanelLogin"); // Veya uygun hata sayfasına yönlendirme
             }
 
-            // Yalnızca giriş yapan kullanıcının taslaklarını getir
-            var draftMessages = _messageService.GetDraftMessagesBySender(userMail);
+            // Arayüzden gelen, taslakları getiren metodu kullanıyoruz:
+            // (IMessageService'de GetDraftMessagesBySender metodu olmalı)
+            List<Message> messageList = _messageService.GetDraftMessagesBySender(userMail);
 
-            return View(draftMessages);
+            // =======================================================
+            // ARAMA FİLTRESİ ENTEGRASYONU
+            // =======================================================
+            if (!string.IsNullOrEmpty(search))
+            {
+                string searchLower = search.ToLower();
+
+                // Taslakları Konu, Alıcı Mail veya Mesaj İçeriği üzerinden filtreleme
+                messageList = messageList
+                    .Where(m => (m.Subject != null && m.Subject.ToLower().Contains(searchLower)) ||
+                                (m.ReceiverMail != null && m.ReceiverMail.ToLower().Contains(searchLower)) ||
+                                (m.MessageContent != null && m.MessageContent.ToLower().Contains(searchLower)))
+                    .ToList();
+            }
+
+            // Filtrelemeden sonra sıralama (en son tarihe göre)
+            messageList = messageList.OrderByDescending(x => x.MessageDate).ToList();
+
+            // Arama kelimesini input alanında tutmak için View'a gönderiyoruz
+            ViewBag.CurrentSearch = search;
+
+            return View(messageList);
         }
 
-        [ChildActionOnly]
-        public ActionResult MailboxMenu()
+        [HttpPost]
+        public ActionResult Drafts(List<int> selectedMessages)
         {
-            string userMail = (string)Session["WriterMail"];
-
-            if (string.IsNullOrEmpty(userMail))
-            {
-                // Oturum yoksa mesaj sayaçlarını 0 yap
-                ViewBag.InboxTotalCount = 0;
-                ViewBag.SendBoxCount = 0;
-                ViewBag.InboxUnreadCount = 0;
-                return PartialView();
-            }
-
-            // 2. Mesaj Sayaçları (Sadece oturumdaki mail adresine göre)
-            ViewBag.InboxTotalCount = _messageService.GetListInbox(userMail).Count;
-            ViewBag.SendBoxCount = _messageService.GetListSendbox(userMail).Count;
-            ViewBag.InboxUnreadCount = _messageService.GetUnreadMessageCountByReceiver(userMail);
-
-            return PartialView();
+            // Bu metot toplu işlem içindir.
+            return RedirectToAction("DraftsBulkMoveToTrash", new { messageIds = selectedMessages });
         }
 
-        public ActionResult TrashBox()
+        [HttpGet]
+        public ActionResult TrashBox(string search = null)
         {
-            string userMail = (string)Session["WriterMail"];
+            string userMail = GetUserMail();
 
-            // Oturum yoksa, login sayfasına yönlendir
-            if (string.IsNullOrEmpty(userMail))
+            // ===============================================
+            // 1. Mesajları Çekme (Sadece yazarın kendi mesajları)
+            // ===============================================
+            List<Message> messageList = _messageService.GetListTrash(userMail);
+
+            // 2. Contact Mesajlarını Çekme kısmı tamamen KALDIRILDI.
+            // --------------------------------------------------------------------------------
+
+            // ===============================================
+            // 3. Arama Filtresi Uygulama (Sadece Message için)
+            // ===============================================
+            if (!string.IsNullOrEmpty(search))
             {
-                return RedirectToAction("Index", "Login");
+                string searchLower = search.ToLower();
+
+                // a) Message Listesi Filtresi
+                messageList = messageList
+                    .Where(m => (m.ReceiverMail != null && m.ReceiverMail.ToLower().Contains(searchLower)) ||
+                                (m.SenderMail != null && m.SenderMail.ToLower().Contains(searchLower)) ||
+                                (m.Subject != null && m.Subject.ToLower().Contains(searchLower)) ||
+                                (m.MessageContent != null && m.MessageContent.ToLower().Contains(searchLower)))
+                    .ToList();
+
+                // b) Contact Listesi Filtresi kısmı tamamen KALDIRILDI.
             }
 
-            // 1. SİLİNMİŞ CONTACT (İletişim Formu) MESAJLARI
-            // Tüm Contact mesajlarından sadece IsTrash=true olanları getir.
-            var contactTrash = _contactService.GetList()
-                                              .Where(x => x.IsTrash == true)
-                                              .ToList();
+            // ===============================================
+            // 4. View'a Gönderme
+            // ===============================================
+            // Contact listesini ViewBag ile gönderme KALDIRILDI.
+            // ViewBag.ContactTrash = contactList; // Bu satırı silin.
 
-            // 2. SİLİNMİŞ MESSAGE (Kullanıcı Mesajları)
-            // Business Layer'da MessageService içine bu methodlar eklenmelidir:
+            ViewBag.CurrentSearch = search;
 
-            // MesajController'da GetListInbox/GetListSendbox'ı filtreleyen bir method yoksa, 
-            // buradaki filtreleme mantığını kullanmalısınız:
-
-            var messageTrash = _messageService.GetList()
-                                              .Where(x => x.IsTrash == true &&
-                                                         (x.SenderMail == userMail || x.ReceiverMail == userMail))
-                                              .ToList();
-
-            // İki farklı model türünü tek View'a göndermek için ViewBag veya ViewModel kullanacağız.
-            ViewBag.ContactTrash = contactTrash;
-
-            // Ana Model olarak silinmiş Message listesini gönderelim.
-            return View(messageTrash);
+            return View(messageList);
         }
 
         public ActionResult MessageMoveToTrash(int id)
         {
-            // Business Layer'da MessageMoveToTrash methodunuzun olduğunu varsayıyoruz.
-            _messageService.MessageMoveToTrash(id);
+            var message = _messageService.GetById(id);
+            string userMail = (string)Session["WriterMail"];
+            string redirectAction = "TrashBox";
 
-            // Yönlendirme: Aynı Controller'daki TrashBox'a git
+            if (message != null)
+            {
+                _messageService.MessageMoveToTrash(id, userMail);
+
+                if (message.SenderMail == userMail)
+                {
+                    // Mesaj taslak ise veya giden ise
+                    redirectAction = (message.IsDraft == true) ? "Drafts" : "SendBox";
+                }
+                else if (message.ReceiverMail == userMail)
+                {
+                    // Mesaj gelen kutusu ise
+                    redirectAction = "Inbox";
+                }
+            }
+            return RedirectToAction(redirectAction);
+        }
+
+        // Toplu Taşıma Metodu (Giden/Gelen Kutusu'ndan tek bir yerde toplanabilir)
+        [HttpPost]
+        public ActionResult MessageBatchMoveToTrash(List<int> selectedMessages)
+        {
+            // Yazar/Yönetici paneline göre bu Session adını kullanıyoruz
+            string userMail = (string)Session["WriterMail"];
+
+            if (selectedMessages != null && selectedMessages.Count > 0)
+            {
+                foreach (var id in selectedMessages)
+                {
+                    var message = _messageService.GetById(id);
+                    if (message != null)
+                    {
+                        // Mesajın kime ait olduğuna bakarak doğru bayrağı işaretle
+                        if (message.SenderMail == userMail)
+                        {
+                            // Gönderen (Yazar/Yönetici) siliyor (Giden Kutusu veya Taslak)
+                            message.SenderTrash = true;
+
+                            // KRİTİK DÜZELTME: Kaynak klasörü belirleme
+                            if (message.IsDraft)
+                            {
+                                message.IsDraft = false;
+                                // Kaynak: Taslaklar
+                                message.SourceFolder = "Taslak";
+                            }
+                            else
+                            {
+                                // Kaynak: Giden Kutusu
+                                message.SourceFolder = "Giden";
+                            }
+                        }
+                        else if (message.ReceiverMail == userMail)
+                        {
+                            // Alıcı (Yazar/Yönetici) siliyor (Gelen Kutusu)
+                            message.ReceiverTrash = true;
+                            // KRİTİK DÜZELTME: Kaynak klasörü belirleme
+                            // Kaynak: Gelen Kutusu
+                            message.SourceFolder = "Gelen";
+                        }
+                        // Eğer mesaj ne gönderene ne de alıcıya aitse (ki bu olmamalı), 
+                        // SourceFolder null kalacak ve View'da 'Bilinmiyor' olarak görünecektir.
+
+                        _messageService.MessageUpdate(message);
+                    }
+                }
+            }
             return RedirectToAction("TrashBox");
         }
 
+        //çöp kutusu sayfasındaki tekli geri yükle metodu için
         public ActionResult MessageRestore(int id)
         {
-            _messageService.MessageRestore(id);
+            // 1. Oturumdaki Kullanıcı Mailini Çekme (Bu, WriterMail olmalı)
+            // Eğer mail oturumda yoksa, bu kısmı kendi projenize göre (örn: FormsAuthentication, Identity) ayarlayın.
+            string userMail = (string)Session["WriterMail"];
+
+            if (string.IsNullOrEmpty(userMail))
+            {
+                // Kullanıcı oturumu bulunamazsa giriş sayfasına yönlendirme (opsiyonel hata kontrolü)
+                return RedirectToAction("WriterLogin", "Login");
+            }
+
+            // 2. Business Layer'daki metodu doğru parametrelerle çağırma
+            _messageService.MessageRestore(id, userMail);
+
+            // İşlem bittikten sonra genellikle Çöp Kutusu listesine yönlendirilir
             return RedirectToAction("TrashBox");
         }
 
+        //çöp kutusu sayfasındaki tekli kalıcı sil metodu için
         public ActionResult MessageHardDelete(int id)
         {
-            // Öncelikle mesajı ID ile Business katmanından çekiyoruz.
             var messageValue = _messageService.GetById(id);
 
             if (messageValue != null)
             {
-                // Mesajı silme metodunu çağırıyoruz.
                 _messageService.MessageDelete(messageValue);
-
-                // Silme işleminden sonra kullanıcıyı tekrar çöp kutusuna yönlendiriyoruz.
                 return RedirectToAction("TrashBox");
             }
-            // Mesaj bulunamazsa hata sayfasına veya ana sayfaya yönlendirilebilir.
+            return RedirectToAction("TrashBox");
+        }
+
+        [HttpPost]
+        public ActionResult TrashHardDeleteItems(int[] selectedMessageIds) // selectedContactIds KALDIRILDI
+        {
+            // A) Mesaj Kalıcı Silme
+            if (selectedMessageIds != null && selectedMessageIds.Length > 0)
+            {
+                foreach (var id in selectedMessageIds)
+                {
+                    var message = _messageService.GetById(id);
+                    if (message != null)
+                    {
+                        // Business katmanındaki kalıcı silme metodunu çağırıyoruz.
+                        _messageService.MessageDelete(message);
+                    }
+                }
+            }
+
+            // B) Contact Kalıcı Silme kısmı tamamen KALDIRILDI.
+
+            // İşlem bittikten sonra çöp kutusuna geri dön
+            return RedirectToAction("TrashBox");
+        }
+
+        [HttpPost]
+        public ActionResult TrashRestoreMessages(int[] selectedMessageIds) // selectedContactIds KALDIRILDI
+        {
+            string userMail = (string)Session["WriterMail"];
+
+            if (selectedMessageIds != null && selectedMessageIds.Length > 0)
+            {
+                foreach (var id in selectedMessageIds)
+                {
+                    var message = _messageService.GetById(id);
+                    if (message != null)
+                    {
+                        // Hangi bayrak True ise onu False yap
+                        if (message.SenderMail == userMail)
+                        {
+                            message.SenderTrash = false;
+                        }
+                        else if (message.ReceiverMail == userMail)
+                        {
+                            message.ReceiverTrash = false;
+                        }
+
+                        _messageService.MessageUpdate(message);
+                    }
+                }
+            }
+
+            // Contact geri yükleme mantığı tamamen KALDIRILDI.
+
+            return RedirectToAction("TrashBox");
+        }
+        [HttpPost]
+        public ActionResult InboxBulkMoveToTrash(int[] messageIds)
+        {
+            // Gelen kutusundan silme işlemi için MessageBatchMoveToTrash'i kullanıyoruz.
+            return MessageBatchMoveToTrash(messageIds.ToList());
+        }
+
+        [HttpPost]
+        public ActionResult SendBoxBulkMoveToTrash(int[] messageIds)
+        {
+            // Giden kutusundan silme işlemi için MessageBatchMoveToTrash'i kullanıyoruz.
+            return MessageBatchMoveToTrash(messageIds.ToList());
+        }
+
+        [HttpPost]
+        public ActionResult DraftsBulkMoveToTrash(List<int> messageIds)
+        {
+            string userMail = (string)Session["WriterMail"];
+
+            if (messageIds != null && messageIds.Any())
+            {
+                foreach (var id in messageIds)
+                {
+                    var message = _messageService.GetById(id);
+
+                    // KRİTİK KONTROL: Mesajın mevcut kullanıcıya ait bir taslak olduğundan emin ol
+                    if (message != null && message.IsDraft == true && message.SenderMail == userMail)
+                    {
+                        message.SenderTrash = true;
+                        message.SourceFolder = "Taslak";
+                        _messageService.MessageUpdate(message);
+                    }
+                }
+            }
             return RedirectToAction("TrashBox");
         }
     }

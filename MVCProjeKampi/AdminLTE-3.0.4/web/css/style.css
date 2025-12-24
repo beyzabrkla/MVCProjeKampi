@@ -4,6 +4,7 @@
 	License: Creative Commons Attribution 3.0 Unported
 	License URL: http://creativecommons.org/licenses/by/3.0/
 --*/
+/* Responsive Harita Kapsayıcısı */
 
 html,
 body {
@@ -22,7 +23,28 @@ body a {
     -ms-transition: 0.5s all;
     font-family: 'Roboto', sans-serif;
 }
+.map-responsive-container {
+  overflow: hidden;
+  position: relative;
+  /* padding-bottom: 56.25%; satırı ÇIKARILDI */
+  height: 400px; /* Sabit bir yükseklik değeri verildi (İstediğiniz değeri yazabilirsiniz, örn: 350px) */
+  margin-top: 20px;
+  max-width: 100%; /* Haritanın container içinde %100 yer kaplamasını sağlar */
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
 
+  /* iframe'i kapsayıcıya sığdırır */
+  .map-responsive-container iframe {
+    left: 0;
+    top: 0;
+    /* height: 100%; haritanın kapsayıcının (400px) yüksekliğini almasını sağlar */
+    height: 100%;
+    /* width: 100%; haritanın kapsayıcının (%100) genişliğini almasını sağlar */
+    width: 100%;
+    position: absolute;
+  }
 a:hover {
     text-decoration: none;
 }
@@ -262,7 +284,7 @@ div#word-mark h1 a {
 /*-- /header --*/
 
 .banner_section {
-    background: url(../images/banner.jpg) no-repeat 0px 0px;
+    background: url(AdminLTE-3.0.4/ProjectImages/blog.jpg) no-repeat 0px 0px;
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;

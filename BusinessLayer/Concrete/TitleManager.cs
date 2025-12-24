@@ -56,5 +56,13 @@ namespace BusinessLayer.Concrete
             _uow.Titles.Update(title);
             _uow.Commit();
         }
+
+        public List<Title> GetListWithWriterAndCategory()
+        {
+            return _uow.Titles.List(
+                filter: null,
+                includeProperties: "Writer,Category" // İlişkileri virgülle ayırarak yüklüyoruz
+            );
+        }
     }
 }

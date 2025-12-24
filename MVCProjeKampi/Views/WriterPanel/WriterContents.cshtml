@@ -1,0 +1,55 @@
+﻿@using EntityLayer.Concrete
+@model List<Content>
+@{
+    ViewBag.Title = "Başlık İçerikleri";
+    Layout = "~/Views/Shared/_WriterLayout.cshtml";
+
+}
+
+<section class="content-header">
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if (Model != null && Model.Any())
+        {
+            // İçerikleri ters kronolojik sırada tarihe göre grupluyoruz
+            var groupedContents = Model.OrderByDescending(c => c.ContentDate)
+                                        .GroupBy(c => ((DateTime)c.ContentDate).Date);
+
+            // X: Tarih Grubu
+            foreach (var x in groupedContents)
+            {
+                <h5 class="mt-4 mb-2 text-success">
+                    <strong>@x.Key.ToString("dd-MMM-yyyy").ToUpper()</strong>
+                </h5>
+
+                // Y: O tarihe ait her bir içerik
+                foreach (var y in x)
+                {
+                    <div class="card card-outline card-info">
+                        <div class="card-header bg-white">
+                            <i class="fas fa-dot-circle text-warning mr-2"></i>
+                            <h3 class="card-title text-primary">@y.Title.TitleName</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>@y.ContentValue</p>
+
+                            <small class="text-muted float-right">
+                                Yazar: <strong>@y.Writer.WriterName</strong>
+                            </small>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Seçili başlığa ait henüz bir içerik bulunmamaktadır.
+                <a href="/WriterPanelContent/AddContent/@ViewBag.TitleId" class="alert-link">Hemen ilk içeriği ekleyin.</a>
+            </div>
+        }
+    </div>
+</section>

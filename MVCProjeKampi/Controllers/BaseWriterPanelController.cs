@@ -9,6 +9,14 @@ namespace MVCProjeKampi.Controllers
 {
     public class BaseWriterPanelController : Controller
     {
+        // 🚨 EKLEME: Tüm alt Controller'lar tarafından yazar mailini almak için kullanılacak metot.
+        protected string GetUserMail()
+        {
+            // "WriterMail" oturum anahtarını kullanarak maili çekin.
+            // protected olarak tanımlıyoruz ki sadece türeyen Controller'lar erişebilsin.
+            return Session["WriterMail"] as string;
+        }
+
         // Tüm Action metotları çalışmadan önce bu metot çalışır
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {

@@ -16,5 +16,7 @@ namespace BusinessLayer.Abstract
         void TitleDelete(Title title);
         void TitleUpdate(Title title);
         List<Title> GetTitlesByCategoryId(int id);
+
+        List<Title> GetListWithWriterAndCategory();
     }
 }

@@ -8,8 +8,6 @@
 
 <body class="hold-transition sidebar-mini">
 
-    <!-- Content Wrapper. Contains page content -->
-    <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -17,107 +15,146 @@
                     <h1>Gönderilen Mesajlar</h1>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- Main content -->
+
     <section class="content">
         <div class="row">
-            <!-- /.col -->
             @Html.Action("MessageListMenu", "WriterPanelMessage")
             <div class="col-md-9">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
                         <h3 class="card-title">Gönderilen Mesajlar</h3>
                         <div class="card-tools">
-                            <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" placeholder="Mail Kutusunda Ara">
-                                <div class="input-group-append">
-                                    <div class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
+                            @* Arama formu Controller'a "search" parametresini GET metoduyla gönderir *@
+                            @using (Html.BeginForm("SendBox", "WriterPanelMessage", FormMethod.Get))
+                            {
+                                <div class="input-group input-group-sm">
+                                    @* ID ve name eklendi. Mevcut arama kelimesini tutmak için ViewBag.CurrentSearch kullanıldı. *@
+                                    <input type="text" name="search" id="tableSearchSendBox" class="form-control"
+                                           placeholder="Mail Kutusunda Ara" value="@ViewBag.CurrentSearch">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- /.card-tools -->
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body p-0">
-                        <div class="table-responsive mailbox-messages">
-                            <table class="table table-hover table-striped">
-                                <tbody>
-                                    @foreach (var x in Model)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="icheck-primary">
-                                                    <input type="checkbox" value="" id="check@(x.MessageId)">
-                                                    <label for="check@(x.MessageId)"></label>
-                                                </div>
-                                            </td>
-
-                                            <td class="mailbox-star">
-                                                <i class="fas fa-star text-muted"></i>
-                                            </td>
-
-                                            <td class="mailbox-name">
-                                                <a href="/WriterPanelMessage/GetSendBoxMessageDetails/@x.MessageId">@x.ReceiverMail</a>
-                                            </td>
-
-                                            <td class="mailbox-subject">
-                                                <b>@x.Subject</b> - @( !string.IsNullOrEmpty(x.MessageContent) && x.MessageContent.Length > 50 ? x.MessageContent.Substring(0, 50) + "..." : x.MessageContent ?? "" )
-                                            </td>
-
-                                            <td class="mailbox-attachment"></td>
-
-                                            <td class="mailbox-date">
-                                                @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))
-                                            </td>
-
-                                            <td>
-                                                <a href="/WriterPanelMessage/MessageMoveToTrash/@x.MessageId" class="btn btn-default btn-sm"
-                                                   title="Çöp Kutusuna Taşı"
-                                                   onclick="return confirm('Bu mesajı çöp kutusuna taşımak istediğinizden emin misiniz?')">
-                                                    <i class="far fa-trash-alt"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            }
                         </div>
                     </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer p-0">
-                        <div class="mailbox-controls">
-                            <!-- Check all button -->
-                            <button type="button" class="btn btn-default btn-sm checkbox-toggle">
-                                <i class="far fa-square"></i>
-                            </button>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-sm"><i class="far fa-trash-alt"></i></button>
-                                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-reply"></i></button>
-                                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i></button>
+
+                    @* Form tüm tabloyu kapsar, böylece seçilen tüm messageIds gönderilebilir *@
+                    <form id="bulkActionFormSendBox" method="post" action="/WriterPanelMessage/SendBoxBulkMoveToTrash">
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive mailbox-messages">
+                                @* Tabloya ID eklendi *@
+                                <table class="table table-hover table-striped" id="sendboxTable">
+                                    <tbody>
+                                        @foreach (var x in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="icheck-primary">
+                                                        <input type="checkbox" name="messageIds" value="@x.MessageId" id="check@(x.MessageId)">
+                                                        <label for="check@(x.MessageId)"></label>
+                                                    </div>
+                                                </td>
+
+                                                <td class="mailbox-star">
+                                                    <i class="fas fa-star text-muted"></i>
+                                                </td>
+
+                                                <td class="mailbox-name">
+                                                    <a href="/WriterPanelMessage/GetSendBoxMessageDetails/@x.MessageId">@x.ReceiverMail</a>
+                                                </td>
+
+                                                <td class="mailbox-subject">
+                                                    <a href="/WriterPanelMessage/GetSendBoxMessageDetails/@x.MessageId">
+                                                        <b>@x.Subject</b> - @( !string.IsNullOrEmpty(x.MessageContent) && x.MessageContent.Length > 50 ? x.MessageContent.Substring(0, 50) + "..." : x.MessageContent ?? "" )
+                                                    </a>
+                                                </td>
+
+                                                <td class="mailbox-attachment"></td>
+
+                                                <td class="mailbox-date">
+                                                    @(((DateTime)x.MessageDate).ToString("dd-MMM-yyyy"))
+                                                </td>
+
+                                                <td>
+                                                    <a href="/WriterPanelMessage/MessageMoveToTrash/@x.MessageId" class="btn btn-default btn-sm"
+                                                       title="Çöp Kutusuna Taşı"
+                                                       onclick="return confirm('Bu mesajı çöp kutusuna taşımak istediğinizden emin misiniz?')">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
-                            <!-- /.btn-group -->
-                            <button type="button" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></button>
-                            <div class="float-right">
-                                1-50/200
+                        </div>
+
+                        <div class="card-footer p-0">
+                            <div class="mailbox-controls">
+                                <button type="button" class="btn btn-default btn-sm checkbox-toggle" id="checkbox-toggle-sendbox-btn">
+                                    <i class="far fa-square"></i>
+                                </button>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-chevron-left"></i></button>
-                                    <button type="button" class="btn btn-default btn-sm"><i class="fas fa-chevron-right"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm" id="bulkTrashBtnSendBox">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
                                 </div>
-                                <!-- /.btn-group -->
+                                <a href="/WriterPanelMessage/SendBox" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></a>
                             </div>
-                            <!-- /.float-right -->
                         </div>
-                    </div>
+                    </form>
                 </div>
-                <!-- /.card -->
             </div>
-            <!-- /.col -->
         </div>
-        <!-- /.row -->
     </section>
 </body>
 
+<script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
 
+        // 1. CANLI ARAMA (LIVE SEARCH) ENTEGRASYONU
+        // #tableSearchSendBox inputuna yazıldığında, #sendboxTable içindeki satırları filtreler.
+        $("#tableSearchSendBox").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#sendboxTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+        // 2. Checkbox Toggle (Tümünü Seç/Bırak)
+        $('.checkbox-toggle').click(function () {
+            var clicks = $(this).data('clicks');
+            if (clicks) {
+                //Uncheck all checkboxes
+                $('.mailbox-messages input[type="checkbox"]').prop('checked', false);
+                $('.checkbox-toggle .far.fa-check-square').removeClass('far fa-check-square').addClass('far fa-square');
+            } else {
+                //Check all checkboxes
+                $('.mailbox-messages input[type="checkbox"]').prop('checked', true);
+                $('.checkbox-toggle .far.fa-square').removeClass('far fa-square').addClass('far fa-check-square');
+            }
+            $(this).data('clicks', !clicks);
+        });
+
+        // 3. Toplu Çöp Kutusuna Taşıma İşlemi (Bulk Trash)
+        $('#bulkTrashBtnSendBox').on('click', function () {
+            var checkedCount = $('.mailbox-messages input[type="checkbox"]:checked').length;
+
+            if (checkedCount > 0) {
+                if (confirm('Seçili ' + checkedCount + ' mesajı çöp kutusuna taşımak istediğinizden emin misiniz?')) {
+                    $('#bulkActionFormSendBox').submit();
+                }
+            } else {
+                alert('Lütfen çöp kutusuna taşımak için en az bir mesaj seçin.');
+            }
+        });
+    });
+</script>

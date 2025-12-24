@@ -27,7 +27,6 @@ namespace BusinessLayer.DependencyResolvers
             builder.RegisterType<ContactManager>().As<IContactService>().InstancePerRequest();
             builder.RegisterType<ContentManager>().As<IContentService>().InstancePerRequest();
             builder.RegisterType<WriterManager>().As<IWriterService>().InstancePerRequest();
-            builder.RegisterType<AboutManager>().As<IAboutService>().InstancePerRequest();
             builder.RegisterType<ImageFileManager>().As<IImageFileService>().InstancePerRequest();
 
             // ----------------------------------------------------------

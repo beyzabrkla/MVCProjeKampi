@@ -15,6 +15,7 @@ namespace BusinessLayer.Abstract
         void WriterUpdate(Writer writer);
         Writer GetById(int id);
         Writer WriterLogin(string writerMail, string writerPassword);
-        int GetWriterIdByMail(string mail); 
+        int GetWriterIdByMail(string mail);
+        List<Writer> GetTrashList();
     }
 }

@@ -1,51 +1,66 @@
 ﻿@using EntityLayer.Concrete
 @model List<Content>
 @{
-    ViewBag.Title = "ContentByTitle";
+    ViewBag.Title = "Başlık İçerikleri";
+    // Bu sayfa Admin panelinde olduğu için _AdminLayout kullanıyoruz.
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // Model boş gelirse hata almamak için güvenli başlık adı alma
+    string titleName = "Seçilen Başlığın İçerikleri";
+    if (Model != null && Model.Any() && Model.First().Title != null)
+    {
+        titleName = Model.First().Title.TitleName;
+    }
 }
 
-<!DOCTYPE html>
-<html>
-<body class="hold-transition sidebar-mini">
-    <!-- Site wrapper -->
-    <div class="wrapper">
-        <section class="content">
-            <div class="container-fluid">
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@titleName Başlığına Ait Tüm Yazılar</h1>
+            </div>
+        </div>
+    </div>
+</section>
 
-                <!-- Timelime example  -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <!-- The time line -->
-                        <div class="timeline">
-                            <!-- timeline time label -->
-                            @foreach (var x in Model)
-                            {
-                            <div class="time-label">
-                                <span class="bg-success">@(((DateTime)x.ContentDate).ToString("dd-MMM-yyyy"))</span>
+<section class="content">
+    <div class="container-fluid">
+
+        @if (Model != null && Model.Any())
+        {
+            var groupedContents = Model.OrderByDescending(c => c.ContentDate)
+                                        .GroupBy(c => ((DateTime)c.ContentDate).Date);
+
+            foreach (var x in groupedContents)
+            {
+                <h5 class="mt-4 mb-2 text-primary">
+                    <strong>@x.Key.ToString("dd-MMM-yyyy").ToUpper()</strong>
+                </h5>
+
+                foreach (var y in x)
+                {
+                    <div class="card card-outline card-secondary">
+                        <div class="card-header bg-light">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-edit text-info mr-2"></i>
+                                Yazar: <strong>@y.Writer.WriterName @y.Writer.WriterSurname</strong>
+                            </h3>
+                            <div class="card-tools">
+                                <span class="badge badge-secondary">Başlık: @y.Title.TitleName</span>
                             </div>
-                            <!-- /.timeline-label -->
-                            <!-- timeline item -->
-                            <div>
-                                <i class="fas fa-comment bg-yellow"></i>
-                                <div class="timeline-item">
-                                    <h3 class="timeline-header"><a href="#">@x.Writer.WriterName @x.Writer.WriterSurname</a></h3>
-                                    <div class="timeline-body">
-                                        @x.ContentValue
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END timeline item -->
-                            }
+                        </div>
+                        <div class="card-body">
+                            <p>@y.ContentValue</p>
                         </div>
                     </div>
-                    <!-- /.col -->
-                </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Seçili başlığa ait henüz bir içerik bulunmamaktadır.
             </div>
-            <!-- /.timeline -->
-        </section>
-        <!-- /.content -->
+        }
     </div>
-    <!-- ./wrapper -->
-</body>
-</html>
+</section>

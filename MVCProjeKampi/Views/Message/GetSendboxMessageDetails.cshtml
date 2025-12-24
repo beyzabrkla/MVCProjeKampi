@@ -1,57 +1,80 @@
 ﻿@model EntityLayer.Concrete.Message
 
 @{
-    ViewBag.Title = "GetInboxMessageDetails";
+    ViewBag.Title = "Gönderilen Mesaj Detayı";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<body class="hold-transition sidebar-mini">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Gönderilen Mesaj Detayı</h1>
-                </div>
-            </div>
-        </div><!-- /.container-fluid -->
-    </section>
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                @Html.Action("ContactPartial", "Contact")
-                <!-- /.col -->
-                <div class="col-md-9">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">Mail Detayı</h3>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body p-0">
-                            <div class="mailbox-read-info">
-                                <h5>Konu:  @Html.DisplayFor(x => x.Subject)</h5>
-                                <h6> 
-                                    Alıcı:  @Html.DisplayFor(x => x.ReceiverMail)
-                                    <span class="mailbox-read-time float-right">@DateTime.Parse(Html.DisplayFor(x => x.MessageDate).ToString()).ToShortDateString() </span>
-                                </h6>
-                            </div>
-                            <!-- /.mailbox-controls -->
-                            <div class="mailbox-read-message">
-                                <p>@Html.DisplayFor(x => x.Subject)</p>
-                                <p>
-                                    @Html.Raw(Model.MessageContent)
-                                </p>
-                            </div>
-                            <!-- /.mailbox-read-message -->
-                        </div>
-                        <!-- /.card-footer -->
-                    </div>
-                    <!-- /.card -->
-                </div>
-                <!-- /.col -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Gönderilen Mesaj Detayı</h1>
             </div>
         </div>
-        <!-- /.row -->
-    </section>
-</body>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            @Html.Action("ContactPartial", "Contact")
+            <div class="col-md-9">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">Mail Detayı</h3>
+
+                        <div class="card-tools">
+                            <div class="btn-group">
+                                @{
+                                    // Önceki butonu
+                                    if (ViewBag.PreviousMessageId != null)
+                                    {
+                                        <a href="/Message/GetSendboxMessageDetails/@ViewBag.PreviousMessageId" class="btn btn-default btn-sm" data-toggle="tooltip" title="Önceki Mesaj">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-default btn-sm" disabled data-toggle="tooltip" title="Önceki Mesaj Yok">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                    }
+
+                                    // Sonraki butonu
+                                    if (ViewBag.NextMessageId != null)
+                                    {
+                                        <a href="/Message/GetSendboxMessageDetails/@ViewBag.NextMessageId" class="btn btn-default btn-sm" data-toggle="tooltip" title="Sonraki Mesaj">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-default btn-sm" disabled data-toggle="tooltip" title="Sonraki Mesaj Yok">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="mailbox-read-info">
+                            <h5>Konu: @Model.Subject</h5>
+                            <h6>
+                                Alıcı: @Model.ReceiverMail
+                                <span class="mailbox-read-time float-right">
+                                    @(((DateTime)Model.MessageDate).ToString("dd-MMM-yyyy HH:mm"))
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="mailbox-read-message">
+                            <p>
+                                @Html.Raw(Model.MessageContent)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

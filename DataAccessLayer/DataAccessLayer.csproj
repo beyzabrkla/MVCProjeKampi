@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\IAboutDal.cs" />
     <Compile Include="Abstract\IAdminDal.cs" />
     <Compile Include="Abstract\ICategoryDal.cs" />
     <Compile Include="Abstract\IContactDal.cs" />
@@ -67,7 +66,6 @@
     <Compile Include="Concrete\Repositories\CategoryRepository.cs" />
     <Compile Include="Concrete\Repositories\GenericRepository.cs" />
     <Compile Include="Concrete\UnitOfWork.cs" />
-    <Compile Include="EntityFramework\EFAboutDal.cs" />
     <Compile Include="EntityFramework\EFAdminDal.cs" />
     <Compile Include="EntityFramework\EFCategoryDal.cs" />
     <Compile Include="EntityFramework\EFContactDal.cs" />
@@ -148,6 +146,30 @@
     <Compile Include="Migrations\202512151417412_AddIsTrashToContactAndMessage.Designer.cs">
       <DependentUpon>202512151417412_AddIsTrashToContactAndMessage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512211914285_AddIsTrashToWriter.cs" />
+    <Compile Include="Migrations\202512211914285_AddIsTrashToWriter.Designer.cs">
+      <DependentUpon>202512211914285_AddIsTrashToWriter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512221441127_AddSenderAndReceiverTrash.cs" />
+    <Compile Include="Migrations\202512221441127_AddSenderAndReceiverTrash.Designer.cs">
+      <DependentUpon>202512221441127_AddSenderAndReceiverTrash.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512221546154_SourceFolder.cs" />
+    <Compile Include="Migrations\202512221546154_SourceFolder.Designer.cs">
+      <DependentUpon>202512221546154_SourceFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512231209139_Delete-About.cs" />
+    <Compile Include="Migrations\202512231209139_Delete-About.Designer.cs">
+      <DependentUpon>202512231209139_Delete-About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512231326433_ContactStatus.cs" />
+    <Compile Include="Migrations\202512231326433_ContactStatus.Designer.cs">
+      <DependentUpon>202512231326433_ContactStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512231623027_Chart.cs" />
+    <Compile Include="Migrations\202512231623027_Chart.Designer.cs">
+      <DependentUpon>202512231623027_Chart.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -216,6 +238,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512151417412_AddIsTrashToContactAndMessage.resx">
       <DependentUpon>202512151417412_AddIsTrashToContactAndMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512211914285_AddIsTrashToWriter.resx">
+      <DependentUpon>202512211914285_AddIsTrashToWriter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512221441127_AddSenderAndReceiverTrash.resx">
+      <DependentUpon>202512221441127_AddSenderAndReceiverTrash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512221546154_SourceFolder.resx">
+      <DependentUpon>202512221546154_SourceFolder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512231209139_Delete-About.resx">
+      <DependentUpon>202512231209139_Delete-About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512231326433_ContactStatus.resx">
+      <DependentUpon>202512231326433_ContactStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512231623027_Chart.resx">
+      <DependentUpon>202512231623027_Chart.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
