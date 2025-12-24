@@ -71,17 +71,15 @@ Admin Paneli, sadece CRUD işlemleriyle sınırlı kalmaz; aynı zamanda sistemd
 Admin Paneli, yalnızca ham veri yönetimi değil, aynı zamanda sistemdeki içeriğin dağılımını görsel olarak analiz etme yeteneği sunar. Bu grafik modülü, hangi başlığın veya kategorinin sisteme ne kadar katkı sağladığını gösterir.
 <img width="1919" height="916" alt="8" src="https://github.com/user-attachments/assets/badcf2d1-afb1-42d1-bea0-44ffe4f04303" />
 
-
 ### 8. 📧 İletişim ve Mesajlaşma Modülü
 Admin Paneli, **İletişim & Mesajlar** modülü aracılığıyla hem dışarıdan gelen (web sitesi iletişim formu) mesajları yönetir hem de sistem içi mesajlaşma yeteneği sunar. Bu modül, tam bir e-posta istemcisi işlevselliği taşır.
 
-#### 9.📝 Yeni Mesaj Oluşturma
+#### a.📝 Yeni Mesaj Oluşturma
 Admin, sistemdeki diğer kullanıcılara veya harici mail adreslerine yeni mesaj gönderebilir veya taslaklara kaydedebilir.
 <img width="1919" height="919" alt="9" src="https://github.com/user-attachments/assets/4988694d-1cca-484e-aeca-9300579e97b7" />
 <img width="1919" height="912" alt="10" src="https://github.com/user-attachments/assets/52a64314-403e-47f5-919e-28b4386c4317" />
 
-
-#### 10.📥 Mesaj Yönetimi Arayüzü
+#### b.📥 Mesaj Yönetimi Arayüzü
 Sol menüde farklı klasörler halinde gelen ve giden mesajlar organize edilir.
 | **İletişim** | Web sitesinin tanıtım kısmındaki doldurulan iletişim formundan gelen tüm mesajlar. |
 | **Gelen Mesajlar** | Sistemdeki diğer kullanıcılardan gelen mesajlar. |
@@ -89,35 +87,72 @@ Sol menüde farklı klasörler halinde gelen ve giden mesajlar organize edilir.
 | **Okunmamış Mesajlar** | Yeni gelen ve henüz görüntülenmemiş mesajlar (Kırmızı bildirim etiketi ile gösterilir). |
 | **Taslaklar** | Kaydedilmiş ancak henüz gönderilmemiş mesajlar. |
 
-#### 11. 🗑️ Çöp Kutusu ve Toplu İşlemler
+#### c. 🗑️ Çöp Kutusu ve Toplu İşlemler
 Silinen tüm mesajlar geçici olarak Çöp Kutusu'nda saklanır ve buradan geri yüklenebilir veya kalıcı olarak silinebilir.
 <img width="1919" height="913" alt="12" src="https://github.com/user-attachments/assets/447f5a71-dee0-47ac-815b-839322a76b43" />
 
-### 12. 🛂 Gelişmiş Yetkilendirme ve Rol Yönetimi
+### 9. 🛂 Gelişmiş Yetkilendirme ve Rol Yönetimi
 **Yetkilendirmeler Sayfası**, Admin'e, alt Admin kullanıcılarının (Admin rolüne sahip diğer hesaplar) yetki seviyelerini **dinamik olarak** yönetme olanağı tanır. Bu, çok kullanıcılı yönetim panellerinde yetki ayrımı yapmak için kritik bir özelliktir.
 <img width="1919" height="910" alt="13" src="https://github.com/user-attachments/assets/1e2ebc93-d323-4797-a400-3646513f8ae8" />
 
-### 13. 🖼️ Sözlük Galeri ve Medya Yönetimi
+### 10. 🖼️ Sözlük Galeri ve Medya Yönetimi
 örsel dosyaların yönetildiği ve **Ekko Lightbox** gibi kütüphanelerle görüntüleme yeteneği sunan Galeri modülü. |
 <img width="1919" height="919" alt="14" src="https://github.com/user-attachments/assets/96f5a298-2a22-4cbd-b457-7ff1f50749e8" />
 
-### 14. 🛑 Hata Yönetimi (Özelleştirilmiş Hata Sayfası)
+### 11. 🛑 Hata Yönetimi (Özelleştirilmiş Hata Sayfası)
 Kullanıcı dostu bir deneyim için standart hata ekranları yerine özelleştirilmiş **404 - Sayfa Bulunamadı** ekranı. |
 <img width="1915" height="992" alt="15" src="https://github.com/user-attachments/assets/9d694b06-b66d-404a-ad66-b367e7190096" />
 
-### 15. 📝 Yazar Girişi (Writer Login) 
+### 12. 📝 Yazar Girişi (Writer Login) 
 Yazar rolüne sahip kullanıcılar için özel olarak tasarlanmış giriş arayüzüdür. Bu giriş başarılı olduğunda, yazarın sadece kendi içeriklerini görebileceği ve yönetebileceği **Yazar Paneline** erişimi sağlanır.
 <img width="1919" height="917" alt="16" src="https://github.com/user-attachments/assets/2624e821-2e68-46dc-bbea-6f44624d5d83" />
 
-### 16. 👤 Yazar Profil Düzenleme
+### 13. 👤 Yazar Profil Düzenleme
 Yazar, panel menüsündeki **Profilim** sekmesinden kendi kişisel ve mesleki bilgilerini güncelleyebilir.
 <img width="1919" height="909" alt="17" src="https://github.com/user-attachments/assets/34613c8a-7029-45d6-ab48-e24e4e108c0e" />
 
-### 17. 📄 Yazarın Başlıkları (İçerik Yönetimi)
+### 14. 📄 Yazarın Başlıkları (İçerik Yönetimi)
 **Başlıklarım** menüsü, yazarın sisteme eklediği içerikleri filtreleyerek sadece kendisine ait başlıkları gösterir. Bu, yazarın kendi katkıları üzerinde tam kontrol sahibi olmasını sağlar.
 <img width="1919" height="902" alt="18" src="https://github.com/user-attachments/assets/b633e863-a54c-47f2-879c-59f7b7a6f067" />
 
+### 15. 📖 Başlık Detayı (Yazılarım)
+Yazar, **Başlıklarım** listesinden bir içeriğin yanındaki **Yazılar** butonuna tıkladığında, o başlığa ait tüm alt içerikleri, yorumları ve kendi ana içeriğini detaylı olarak bu ekranda görebilir.
+<img width="1919" height="920" alt="19" src="https://github.com/user-attachments/assets/2f19a601-eac0-4b8e-a0e2-b6feeb10ec88" />
+
+### 16. 📧 Yazar Paneli Mesajlaşma Modülü
+Yazar, **Mesajlar** modülü aracılığıyla sistem içi mesajları yönetir. Bu modül, Admin panelindeki iletişim modülüne benzer ancak **Web Sitesi İletişim** formundan gelen harici mesajları kapsamaz.
+<img width="1919" height="911" alt="20" src="https://github.com/user-attachments/assets/51e5ed72-bb35-4eb5-96fc-d8eaeb87d920" />
+
+### 17. ✍️ Yazılan Tüm İçerikler (Katkı Zaman Tüneli)
+**Yazılarım** menüsü, yazarın sistemde (başlıklar altında) yaptığı tüm katkıları (yorumlar veya alt içerik metinleri) tarih sırasına göre gösterir. Bu, yazarın faaliyetlerini toplu olarak görmesini sağlar.
+<img width="1919" height="911" alt="21" src="https://github.com/user-attachments/assets/f4d8eb93-cbbe-4a7e-bb4c-a146ea5af141" />
+
+### 18. 🖥️ Admin/Yazar Paneli Navigasyon ve Oturum Yönetimi
+AdminLTE temasının sol menüsünde yer alan bu iki temel işlem, Admin'in/Yazar'ın paneli hızlıca terk etmesini veya sitenin genel görünümüne geçmesini sağlar.
+* **Siteye Git:** Yönetim panelinden çıkmadan, blog sitesinin **ana sayfasına** (kullanıcıların gördüğü ön yüz) yönlendirme yapar. Bu, içerik denetimi sırasında sitenin görünümünü kontrol etmek için pratiktir.
+* **Çıkış Yap:** Admin'in aktif oturumunu güvenli bir şekilde sonlandırır ve onu genellikle giriş sayfasına yönlendirir.
 
 
+## 🌎 Ana Blog Sitesi (Ön Yüz)
+Uygulamanın son kullanıcının gördüğü statik ve tanıtım amaçlı ön yüzüdür. Bu kısım, projenin yönetim paneli ve iş mantığı katmanları kadar dinamik olmasa da, projenin genel tanıtımı ve iletişim bilgileri için kritik bir rol oynar.
+
+### 1. 🏡 Ana Sayfa ve Genel Tasarım
+<img width="1919" height="907" alt="22" src="https://github.com/user-attachments/assets/4ce17fea-1eb6-4fe1-ad05-53a7db3b2aa4" />
+
+### 2. 📝 Proje Tanıtım ve Geliştirme Bileşenleri
+Sitenin farklı bölümlerinde, projenin yapısını ve kullanılan teknolojileri tanıtan statik içerikler bulunur.
+Projede kullanılan teknolojilerin (C# Programlama Dili, ASP.NET MVC, SOLID Prensipleri, Entity Framework Code First, SQL Veritabanı) ve mimarinin gösterildiği görsel bileşenler. 
+<img width="1919" height="454" alt="23" src="https://github.com/user-attachments/assets/2f6d9bbd-8262-4932-9036-fc58b6c7b11a" />
+<img width="1919" height="659" alt="24" src="https://github.com/user-attachments/assets/d89a23d3-b371-4814-871b-c902f44ae116" />
+
+### 3. 🖼️ Proje Görselleri (Referans Ekranları)
+<img width="1919" height="905" alt="25" src="https://github.com/user-attachments/assets/9ad1f7a7-231b-464e-a0df-4aea8982efee" />
+
+### 4. 📞 İletişim Formu ve Bilgileri
+Sitenin en önemli dinamik olmayan işlevi, harici kullanıcıların Admin'e ulaşmasını sağlayan iletişim formudur.
+<img width="1919" height="795" alt="26" src="https://github.com/user-attachments/assets/a56ab7c2-8214-4124-a2c0-c700ba21fcfd" />
+
+### 5. 🚪 Navigasyon ve Giriş Noktaları
+<img width="1919" height="908" alt="27" src="https://github.com/user-attachments/assets/bfa738c3-2830-4dfc-8df8-46a951ff6c16" />
 
 
