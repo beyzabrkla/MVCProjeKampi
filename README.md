@@ -1,4 +1,4 @@
-<img width="1919" height="910" alt="2" src="https://github.com/user-attachments/assets/f8647dd5-9b2b-432d-9462-a99800d65d2e" /># 🛡️ MVC PROJE KAMPI: Gelişmiş Yetki, Rol Yönetim, Yazar Blog Sistemi
+<img width="1919" height="910" alt="4" src="https://github.com/user-attachments/assets/572c90d9-d436-4dab-ba9f-760cfb04d113" /># 🛡️ MVC PROJE KAMPI: Gelişmiş Yetki, Rol Yönetim, Yazar Blog Sistemi
 
 ## ✨ Proje Özeti
 Bu uygulama, **ASP.NET MVC** mimarisi üzerinde inşa edilmiş, Katmanlı Mimari (N-Tier) prensiplerini uygulayan kapsamlı bir blog sistemidir. Temel odak noktaları; **Code First** yaklaşımıyla veritabanı yönetimi, **Dependency Injection (DI)** ile bağımlılıkların yönetilmesi ve özelleştirilmiş **Rol/Yetki Kontrolü**dür.
@@ -48,6 +48,9 @@ Kullanıcı Mail ve Şifre ile sisteme erişim. |
 <img width="1919" height="910" alt="2" src="https://github.com/user-attachments/assets/023fa9b0-2db4-4375-a79c-732b1a68f244" />
 Admin girişinden sonra erişilen ana panellerden biri olan Kategori Yönetim Sayfası, Admin rolüne sahip kullanıcının sistemdeki tüm blog kategorilerini görmesini ve yönetmesini sağlar. Bu, projenin temel CRUD (Oluşturma, Okuma, Güncelleme, Silme) işlevlerini somutlaştırır.
 
+### 3. 🎬 Genel Başlık (İçerik) Yönetimi
+<img width="1919" height="910" alt="4" src="https://github.com/user-attachments/assets/0f923a29-9d49-4086-9092-1ceb5585814c" />
+Kategoriden bağımsız olarak sistemdeki tüm içerik başlıklarının listelendiği ana sayfa.
 
 ### 3. 🎬 İçerik (Başlık) Yönetimi
 <img width="1919" height="914" alt="3" src="https://github.com/user-attachments/assets/15958f96-4859-4a59-ab49-288b382a5c60" />
