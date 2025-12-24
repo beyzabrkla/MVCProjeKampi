@@ -1,4 +1,4 @@
-<img width="1919" height="919" alt="9" src="https://github.com/user-attachments/assets/fbe5d441-2893-456e-a27f-0bd294c32db9" /># 🛡️ MVC PROJE KAMPI: Gelişmiş Yetki, Rol Yönetim, Yazar Blog Sistemi
+# 🛡️ MVC PROJE KAMPI: Gelişmiş Yetki, Rol Yönetim, Yazar Blog Sistemi
 
 ## ✨ Proje Özeti
 Bu uygulama, **ASP.NET MVC** mimarisi üzerinde inşa edilmiş, Katmanlı Mimari (N-Tier) prensiplerini uygulayan kapsamlı bir blog sistemidir. Temel odak noktaları; **Code First** yaklaşımıyla veritabanı yönetimi, **Dependency Injection (DI)** ile bağımlılıkların yönetilmesi ve özelleştirilmiş **Rol/Yetki Kontrolü**dür.
