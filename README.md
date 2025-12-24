@@ -149,7 +149,7 @@ Projede kullanılan teknolojilerin (C# Programlama Dili, ASP.NET MVC, SOLID Pren
 <img width="1919" height="905" alt="25" src="https://github.com/user-attachments/assets/9ad1f7a7-231b-464e-a0df-4aea8982efee" />
 
 ### 4. 📞 İletişim Formu ve Bilgileri
-Sitenin en önemli dinamik olmayan işlevi, harici kullanıcıların Admin'e ulaşmasını sağlayan iletişim formudur.
+Sitenin en önemli statik olmayan işlevi, harici kullanıcıların Admin'e ulaşmasını sağlayan iletişim formudur.
 <img width="1919" height="795" alt="26" src="https://github.com/user-attachments/assets/a56ab7c2-8214-4124-a2c0-c700ba21fcfd" />
 
 ### 5. 🚪 Navigasyon ve Giriş Noktaları
